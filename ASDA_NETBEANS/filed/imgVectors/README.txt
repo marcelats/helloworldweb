@@ -1,0 +1,1 @@
+Program used to make the images: Fireworks CS6

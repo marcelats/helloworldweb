@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence      http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="ASDA_JSPPU">
+    <!-- JPA -->
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <!-- Mapped classes -->
+    <class>com.asda.beans.AccountBean</class>
+    <class>com.asda.beans.GraphBean</class>
+    <properties>
+      <!-- Connection properties -->
+      <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/ASDA"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.password" value="m1n1ster"/>
+      <!--  Hibernate's properties -->
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <!--  Update the database. Generates the tables if necessary -->
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <!-- C3P0 (connection pool) properties -->
+      <property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+      <!-- Minimum number of JDBC connections in the pool. Hibernate default: 1 -->
+      <property name="hibernate.c3p0.min_size" value="5"/>
+      <!-- Maximum number of JDBC connections in the pool. Hibernate default: 100 -->
+      <property name="hibernate.c3p0.max_size" value="100"/>
+      <!--  Idle time in seconds before a connection is automatically validated. Hibernate default: 0 -->
+      <property name="hibernate.c3p0.idle_test_period" value="360"/>
+      <!-- Number of prepared statements will be cached. Increase performance. Hibernate default: 0 ,
+            caching is disable. -->
+      <property name="hibernate.c3p0.max_statements" value="50"/>
+      <!-- When an idle connection is removed from the pool (in second). Hibernate default: 0,
+            never expire. -->
+      <property name="hibernate.c3p0.timeout" value="120"/>
+      <!-- Must be set in hibernate.cfg.xml (or hibernate.properties), Hibernate default: 1
+            Determines how many connections at a time c3p0 will try to acquire when the pool is exhausted. -->
+      <property name="hibernate.c3p0.acquire_increment" value="1"/>
+    </properties>
+  </persistence-unit>
+</persistence>
