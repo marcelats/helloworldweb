@@ -1,0 +1,13 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  webapp:
+    build: 
+      context: ./webapp
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "5062:3000"
