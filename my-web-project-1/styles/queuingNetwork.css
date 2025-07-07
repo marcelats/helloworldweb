@@ -1,0 +1,181 @@
+/* 
+    Document   : queuingNetwork
+    Created on : 22/05/2014, 02:03:58
+    Author     : Felipe Osorio Thomé
+    Description:
+        Class styles for the queuing network module.
+*/
+
+/* Standard definitions. */
+body, html {
+    width: 100%;
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    font: 11px/1.5 Verdana, Arial, Helvetica, sans-serif;
+    color: #eee;
+    text-align: center;
+}
+
+
+/* Styles for the global div. This div contains all others divs. */
+#global {
+    overflow: hidden;
+    width: 100%;
+}
+
+
+/* --- Top --- */
+/* Styles for topTitle div. Contains the program title. */
+#topTitle {
+    font-size: 14px;
+    background: #222;
+    border-bottom: 1px solid #fff;
+}
+
+/* Styles for topOptions div. Contains the program options like new document, save, etc. */
+#topMenu {
+    background: #222;
+    border-bottom: 5px solid #005e66;
+}
+#topMenu img {
+    width: 48px;
+    height: 48px;
+}
+
+
+/* --- Center --- */
+#center {
+    overflow: hidden;
+    height: 400px;
+}
+
+/* Styles for leftTools div. Contains the tools. */
+#leftMenu {
+    float: left;
+    overflow: auto;
+    width: 54px;
+    height: 100%;
+    background: #222;
+    border-right: 5px solid #005e66;
+}
+#leftMenu img {
+    width: 48px;
+    height: 48px;
+}
+
+/* Styles for draw area. */
+#drawArea {
+    float: left;
+    position: relative; /* This way the img is always positioned relative to drawArea */
+    overflow: auto;
+    height: 100%;
+    background: url("../img/grid.gif") left top repeat;
+}
+#drawArea img {
+    width: 75px;
+    height:75px;
+}
+.idDiv {
+    position: absolute;
+    top: 0; left: 0;
+    padding: 0 3px;
+    background: #660700;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 100%;
+    
+    border: 3px solid #005e66;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+/* Styles for div containing the properties of elements. Activated on double click. */
+#propertiesArea {
+    float: left;
+    display: none;
+    overflow: auto;
+    width: 250px;
+    height: 100%;
+    background: #222;
+    text-align: right;
+}
+
+
+/* --- Bottom (footer) --- */
+#bottom {
+    overflow: hidden;
+}
+/* Styles for status bar div. */
+#bottomStatus {
+    display: table;
+    width: 100%;
+    height: 15px;
+    border-top: 5px solid #005e66;
+    background: #222;
+}
+#statusLeft {
+    display: table-cell;
+    width: 30%;
+    color: #222;
+    background: #fff;
+}
+#statusMiddle {
+    display: table-cell;
+}
+#statusRight {
+    display: table-cell;
+    width: 30%;
+    color: #222;
+    background: #fff;
+}
+/* Styles for div with the authors' names. */
+#bottomCredits {
+    margin-top: 15px;
+    background: #222;
+}
+
+
+/* Styles for ul containing the the options (or tools, note the specialization). */
+.menu {
+    border: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.menu li {
+    display: inline-block;
+    padding: 0  6px;
+}
+.menuBlock li {
+    display: block;
+    padding: 0;
+}
+.menu div {
+    display: block;
+    margin: auto;
+}
+.menu li:hover {
+    margin: auto;
+    background: #005e66;
+}
+.menu li:active {
+    margin: auto;
+    background: #0f5156;
+}
+
+
+/* Styles for the window showing the users' files (graphs). */
+.filesWindow {
+    border: 1px solid #005e66;
+    background: #fff;
+    color: #000;
+    margin: 5px 0 5px 0;
+    width: calc(100% - 2px);
+    height: 150px;
+    overflow: auto;
+}

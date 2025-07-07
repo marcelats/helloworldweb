@@ -17,19 +17,41 @@ services:
   payara:
     image: payara/server-full:6.2025.1
     volumes:
-      - ./my-web-project-1.war:/opt/payara/deployments/ROOT.war
+      - ./ROOT.war:/opt/payara/deployments/ROOT.war
+      - shared-data:/shared
     environment:
       - POSTGRES_HOST=postgres
     ports:
-      - "5062:8080"
+      - "8511:8080"
       - "4848:4848"  
     networks:
       - app-network
     depends_on:
-      - postgres  
+      - postgres 
+      - container_b
+      - python-executor  
+
+  container_b:
+    build:
+      context: ./container_b  # pasta com o Dockerfile
+    container_name: container_b
+    volumes:
+      - shared-data:/shared
+    networks:
+      - app-network    
+    ports:
+      - "8000:8000"
+
+  python-executor:
+    build: ./container-python
+    ports:
+      - "8001:8000"
+    networks:
+      - app-network      
 
 volumes:
-  pgdata:      
+  pgdata:
+  shared-data:    
 
 networks:
   app-network:

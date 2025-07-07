@@ -5,7 +5,7 @@ FROM payara/server-full:latest
 WORKDIR /opt/payara
 
 # Copiar o arquivo WAR da aplicação para o diretório de deploy do Payara
-COPY WebApplication1.war /opt/payara/deployments/
+COPY ROOT.war /opt/payara/deployments/
 
 # Expor a porta 8080 (porta padrão do GlassFish e Payara para aplicações web)
 EXPOSE 8080

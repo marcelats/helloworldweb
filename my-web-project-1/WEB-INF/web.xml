@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+    <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         version="5.0">
+    <welcome-file-list>
+        <welcome-file>home</welcome-file>
+    </welcome-file-list>
+    <!-- Role: queuingNetwork
+    <filter>
+        <filter-name>queuingNetworkRole</filter-name>
+        <filter-class>com.asda.filters.login.RoleFilter</filter-class>
+        <init-param>
+            <param-name>role</param-name>
+            <param-value>queuingNetwork</param-value>
+        </init-param>
+        <init-param>
+            <param-name>denyPage</param-name>
+            <param-value>/WEB-INF/view/index.jsp</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>queuingNetworkRole</filter-name>
+        <url-pattern>/qnetwork/*</url-pattern>
+    </filter-mapping>-->
+    <!-- End of queuingNetwork role -->
+    <servlet>
+        <servlet-name>QueuingNetworkServlet</servlet-name>
+        <servlet-class>com.asda.controller.asda.QueuingNetworkServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AccountsServlet</servlet-name>
+        <servlet-class>com.asda.controller.accounts.AccountsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Home</servlet-name>
+        <servlet-class>com.asda.controller.home.HomeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QueuingNetworkServlet</servlet-name>
+        <url-pattern>/qnetwork</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AccountsServlet</servlet-name>
+        <url-pattern>/accounts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Home</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>

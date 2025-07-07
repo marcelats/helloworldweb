@@ -1,0 +1,9 @@
+digraph mm1 {
+	comment=" 2000 0 0 0 True False 0 10 "
+    0 [label=Source comment=1]
+    1 [label=CPU comment=" 2 1 1 1 0.1 "]
+    2 [label=Destination comment=3]
+    0 -> 1 
+    1 -> 2 
+}
+
