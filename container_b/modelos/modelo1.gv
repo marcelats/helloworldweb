@@ -1,0 +1,10 @@
+digraph modelo1 {
+	comment=" 600 0 0 0 True False 0 10 " rankdir=LR
+	0 [label=Source comment=1 image="Rsource.gif" labelloc=t shape=plaintext]
+	1 [label=Front comment=" 2 1 1 2.0 1.0 " image="R1x1.gif" labelloc=t shape=plaintext]
+	2 [label=CPU comment=" 2 None 1 None 5.0 " image="R1x1.gif" labelloc=t shape=plaintext]
+	3 [label=Destination comment=3 image="REnd.gif" labelloc=t shape=plaintext]
+	0 -> 1 [comment=100]
+	1 -> 2 [comment=100]
+	2 -> 3 [comment=100]
+}

@@ -1,0 +1,8 @@
+digraph Mm1 {
+	comment=" 2000 0 0 0 True False 0 10 " rankdir=LR
+	0 [label=Source comment=1 image="Rsource.gif" labelloc=t shape=plaintext]
+	1 [label=CPU comment=" 2 1 1 1 0.1 " image="R1x1.gif" labelloc=t shape=plaintext]
+	2 [label=Destination comment=3 image="REnd.gif" labelloc=t shape=plaintext]
+	0 -> 1 [comment=100]
+	1 -> 2 [comment=100]
+}

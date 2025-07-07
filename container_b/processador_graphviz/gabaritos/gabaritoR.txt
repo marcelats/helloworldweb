@@ -1,0 +1,33 @@
+# -----------------------------------------------------------------------------
+# Código gerado com o ASDA - Ambiente de Simulação Distribuída Automático
+# -----------------------------------------------------------------------------
+
+library(simmer)
+
+%0define_semente
+
+%1criar_ambiente
+env
+
+# Configurar trajetória 
+
+cliente <- trajectory() %>%
+%2criar_tragetoria
+
+# criando os recursos 
+
+env %>%
+%3adicionar_recursos
+%4criar_gerador_chegadas
+
+# tempo total de execução
+env %>% 
+%5tempo_total
+
+# dados da simulação
+
+chegadas <- get_mon_arrivals(env, TRUE) 
+recursos <- get_mon_resources(env) 
+fila <- get_mon_attributes(env)
+
+%6relatorio_final

@@ -1,0 +1,331 @@
+@0classe_main
+// -----------------------------------------------------------------------------
+// Código gerado com o ASDA - Ambiente de Simulação Distribuída Automático
+// -----------------------------------------------------------------------------
+
+package com.javasim.teste.basic;
+
+public class Main
+{
+    public static void main (String[] args)
+    {
+   
+        Controle m = new Controle();
+
+        // Para a thread principal e da controle do programa para a classe Controle
+        m.await();
+
+        System.exit(0);
+    }
+}
+
+@1classe_controle
+package com.javasim.teste.basic;
+
+import org.javasim.RestartException;
+import org.javasim.Simulation;
+import org.javasim.SimulationException;
+import org.javasim.SimulationProcess;
+
+public class Controle extends SimulationProcess
+{
+
+%0declara_objetos    
+
+    public static double tempoRespostaTotal = 0.0;
+    public static long totalClientes = 0;
+    public static long clientesProcessados = 0;
+    public static double totalServico = 0;
+
+
+    public Controle()
+    {
+        
+    }
+
+    public void run ()
+    {
+        try
+        {
+%1estancia_objetos
+            chegadas.activate();
+
+            Simulation.start();
+
+%2tempo_total
+
+            System.out.println("Tempo total = "+currentTime());
+            System.out.println("Total de clientes presentes no sistema = " + totalClientes);
+            System.out.println("Total de clientes processados = " + clientesProcessados);
+            System.out.println("Tempo de resposta total = " + tempoRespostaTotal);
+            System.out.println("Tempo médio de resposta = "
+                + (tempoRespostaTotal / clientesProcessados));
+            
+%3relatorio_final
+
+            Simulation.stop();
+
+            chegadas.terminate();
+%4encerra_processos
+
+            SimulationProcess.mainResume();
+        }
+        catch (SimulationException e)
+        {
+        }
+        catch (RestartException e)
+        {
+        }
+    }
+    public void await ()
+    {
+        this.resumeProcess();
+        SimulationProcess.mainSuspend();
+    }
+
+}
+@2classe_chegadas
+package com.javasim.teste.basic;
+
+import java.io.IOException;
+
+import org.javasim.RestartException;
+import org.javasim.SimulationException;
+import org.javasim.SimulationProcess;
+import org.javasim.streams.ExponentialStream;
+
+public class Chegadas extends SimulationProcess
+{
+    private ExponentialStream taxa;
+
+    public Chegadas(double media)
+    {
+        taxa = new ExponentialStream(media);
+    }
+
+    public void run ()
+    {
+        while (!terminated())
+        {
+            try
+            {
+                hold(taxa.getNumber());
+            }
+            catch (SimulationException e)
+            {
+            }
+            catch (RestartException e)
+            {
+            }
+            catch (IOException e)
+            {
+            }
+
+            new Cliente();
+        }
+    }
+
+}
+@3classe_cliente
+package com.javasim.teste.basic;
+
+import org.javasim.RestartException;
+import org.javasim.Scheduler;
+import org.javasim.SimulationException;
+
+public class Cliente
+{
+    private double tempoResposta;
+    private double tempoChegada;
+
+    public Cliente()
+    {
+        boolean vazio = false;
+
+        tempoResposta = 0.0;
+        tempoChegada = Scheduler.currentTime();
+%5insere_na_fila_primeiro_recurso
+        Controle.totalClientes++;
+
+        if (vazio)
+        {
+            try
+            {
+%6ativa_primeiro_recurso
+            }
+            catch (SimulationException e)
+            {
+            }
+            catch (RestartException e)
+            {
+            }
+        }
+    }
+    public void finished ()
+    {
+        tempoResposta = Scheduler.currentTime() - tempoChegada;
+        Controle.tempoRespostaTotal += tempoResposta;
+    }
+
+}
+
+@4classe_fila
+package com.javasim.teste.basic;
+
+import java.util.NoSuchElementException;
+
+public class Fila
+{
+    private Lista inicio;
+    private long tamanho;
+    public long clientesEmFila;
+    public long checkFila;
+
+    public Fila()
+    {
+        inicio = null;
+        tamanho = 0;
+        clientesEmFila = 0;
+        checkFila = 0;
+    }
+
+    public boolean isEmpty ()
+    {
+        if (tamanho == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public long queueSize ()
+    {
+        return tamanho;
+    }
+
+    public Cliente dequeue () throws NoSuchElementException
+    {
+        if (isEmpty())
+            throw new NoSuchElementException();
+
+        Lista ptr = inicio;
+        inicio = inicio.proximo;
+
+        tamanho--;
+
+        return ptr.cliente;
+    }
+
+    public void enqueue (Cliente toadd)
+    {
+        if (toadd == null)
+            return;
+
+        Lista ptr = inicio;
+
+        if (isEmpty())
+        {
+            inicio = new Lista();
+            ptr = inicio;
+        }
+        else
+        {
+            while (ptr.proximo != null)
+                ptr = ptr.proximo;
+
+            ptr.proximo = new Lista();
+            ptr = ptr.proximo;
+        }
+
+        ptr.proximo = null;
+        ptr.cliente = toadd;
+        tamanho++;
+    }
+
+    
+}
+
+class Lista
+{
+    public Lista()
+    {
+        cliente = null;
+        proximo = null;
+    }
+
+    public Cliente cliente;
+
+    public Lista proximo;
+}
+@5classe_recursos
+package com.javasim.teste.basic;
+
+import java.io.IOException;
+import java.util.Random;
+
+import org.javasim.RestartException;
+import org.javasim.SimulationException;
+import org.javasim.SimulationProcess;
+import org.javasim.streams.ExponentialStream;
+
+%7nome_do_recurso
+{
+    private ExponentialStream taxa;
+    private Cliente cliente;
+    public double tempoDeServico = 0.0;
+    
+%8construtor_do_recurso
+    {
+        taxa = new ExponentialStream(media);
+        cliente = null;
+    }
+
+    public void run ()
+    {
+        double inicioAtividade, fimAtividade;
+        boolean vazio = false;
+
+        while (!terminated())
+        {
+%9retirar_da_fila
+                try
+                {
+                    hold(serviceTime());
+                }
+                catch (SimulationException e)
+                {
+                }
+                catch (RestartException e)
+                {
+                }
+
+                fimAtividade = currentTime();
+                tempoDeServico += fimAtividade - inicioAtividade;
+                Controle.totalServico += tempoDeServico;
+%10ativa_proximo_recurso
+
+            }
+
+        
+            try
+            {
+                cancel();
+            }
+            catch (RestartException e)
+            {
+            }
+        }
+    }
+
+    public double serviceTime ()
+    {
+        try
+        {
+            return taxa.getNumber();
+        }
+        catch (IOException e)
+        {
+            return 0.0;
+        }
+    }
+
+}

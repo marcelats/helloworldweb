@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="javasim" type="repository">
+    <properties maven-id="javasim:javasim:2.0-hbraun" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/javasim/javasim/2.0-hbraun/javasim-2.0-hbraun.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

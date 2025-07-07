@@ -1,0 +1,47 @@
+# -----------------------------------------------------------------------------
+# Código gerado com o ASDA - Ambiente de Simulação Distribuída Automático
+# -----------------------------------------------------------------------------
+
+import random
+import simpy
+
+contaChegada = 0
+contaTerminos = 0
+%0variaveis
+
+# função que armazena as distribuições utilizadas no modelo
+def distributions(tipo):
+	return {
+%1define_distribuicoes
+	}.get(tipo, 0.0)
+
+# função de chegada de clientes de acordo com os lugares que os clientes chegam
+def chegadaClientes(env, recursos):
+	global contaChegada
+	while True:
+		contaChegada+=1
+		yield env.timeout(distributions('chegadas'))	
+
+%2primeiro_recurso
+
+# funções que realizam o processamento dos demais nodes
+%3gera_processamento_por_node
+
+# define a semente ultizada para a geração aleatoria de numeros
+%4semente
+
+# cria o ambiente de simulação
+env = simpy.Environment()
+
+# cria todos os recursos = facility
+%5cria_recursos
+
+# iniciar os processos de chegada 
+env.process(chegadaClientes(env, recursos))
+
+# define o tempo total de execução da simulação
+%6tempo_total
+
+
+# gera os relatorios finais
+%7relatorio_final
