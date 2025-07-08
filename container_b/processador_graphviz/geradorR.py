@@ -99,7 +99,7 @@ class GeradorR:
 					linha1.append('	seize("' + nome +'", 1) %>%\n')
 					linha1.append('	timeout(function() rexp(1, '+ n.edges[0].destino.getMediaServico() +')) %>%\n')
 					linha1.append('	release("'+ nome +'", 1) %>%\n')
-					linha1.append('	set_attribute("queue_'+ nome +'", function() get_queue_count(env, "'+ nome +'")) %>%\n')
+					linha1.append('	set_attribute("queue_'+ nome +'", function() get_queue_count(env, "'+ nome +'"))\n')
 					self.codigo.writelines(linha1)
 
 	def criarTrajetoriaAleatoria(self):
@@ -109,7 +109,7 @@ class GeradorR:
 		linha1.append('	seize("' + listaNodes[0].getNomeNode().lower()+'", 1) %>%\n')
 		linha1.append('	timeout(function() rexp(1, '+ listaNodes[0].getMediaServico() +')) %>%\n')
 		linha1.append('	release("'+ listaNodes[0].getNomeNode().lower() +'", 1) %>%\n')
-		linha1.append('	set_attribute("queue_'+ listaNodes[0].getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[0].getNomeNode().lower() +'")) %>%\n')
+		linha1.append('	set_attribute("queue_'+ listaNodes[0].getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[0].getNomeNode().lower() +'"))\n')
 		self.codigo.writelines(linha1) 
 
 		while (i < len(listaNodes)-1):
@@ -124,7 +124,7 @@ class GeradorR:
 					#print(prob)
 					# sorteia um numero de 1:len(no.edges) de acordo com a probabilidade de cada nó
 				#print(prob)
-				linha = '	set_attribute("x", function() sample(1:'+ str(len(listaNodes[i].edges)) +', 1, prob=c('+prob+'), replace=TRUE)) %>%\n'
+				linha = '	set_attribute("x", function() sample(1:'+ str(len(listaNodes[i].edges)) +', 1, prob=c('+prob+'), replace=TRUE))\n'
 				self.codigo.write(linha)
 
 				#verifica os destinos dos nodes que vão estar na branch
@@ -150,7 +150,7 @@ class GeradorR:
 							linha1.append('			seize("' + e.destino.getNomeNode().lower+'", 1) %>%\n')
 							linha1.append('			timeout(function() rexp(1, '+ e.destino.getMediaServico() +')) %>%\n')
 							linha1.append('			release("'+ e.destino.getNomeNode().lower +'", 1) %>%\n')
-							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))%>%\n')
+							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))\n')
 						else:
 							linha1.append('		 trajectory() %>%\n')
 							linha1.append('			seize("' + e.destino.getNomeNode().lower+'", 1) %>%\n')
@@ -187,7 +187,7 @@ class GeradorR:
 							linha1.append('			seize("' + e.destino.getNomeNode().lower()+'", 1) %>%\n')
 							linha1.append('			timeout(function() rexp(1, '+ e.destino.getMediaServico() +')) %>%\n')
 							linha1.append('			release("'+ e.destino.getNomeNode().lower() +'", 1) %>%\n')
-							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))%>%\n')
+							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))\n')
 							self.codigo.writelines(linha1)
 							self.criarSubTrajetorias(e.destino, idFim, True)
 						else:
@@ -195,7 +195,7 @@ class GeradorR:
 							linha1.append('			seize("' + e.destino.getNomeNode().lower()+'", 1) %>%\n')
 							linha1.append('			timeout(function() rexp(1, '+ e.destino.getMediaServico() +')) %>%\n')
 							linha1.append('			release("'+ e.destino.getNomeNode().lower() +'", 1) %>%\n')
-							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))%>%\n')
+							linha1.append('			set_attribute("queue_'+ e.destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ e.destino.getNomeNode().lower() +'"))\n')
 							self.codigo.writelines(linha1)
 							self.criarSubTrajetorias(e.destino, idFim, False)
 
@@ -213,7 +213,7 @@ class GeradorR:
 				linha1.append('	seize("' + listaNodes[i].edges[0].destino.getNomeNode().lower()+'", 1) %>%\n')
 				linha1.append('	timeout(function() rexp(1, '+ str(listaNodes[i].edges[0].destino.getMediaServico()) +')) %>%\n')
 				linha1.append('	release("'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", 1) %>%\n')
-				linha1.append('	set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'"))%>%\n')
+				linha1.append('	set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'"))\n')
 				self.codigo.writelines(linha1)
 
 		
@@ -337,7 +337,7 @@ class GeradorR:
 					linha1.append('			seize("' + listaNodes[i].edges[0].destino.getNomeNode().lower()+'", 1) %>%\n')
 					linha1.append('			timeout(function() rexp(1, '+ str(listaNodes[i].edges[0].destino.getMediaServico()) +')) %>%\n')
 					linha1.append('			release("'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", 1) %>%\n')
-					linha1.append('			set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'")) %>%\n')
+					linha1.append('			set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'"))\n')
 				
 				self.codigo.writelines(linha1)
 				
