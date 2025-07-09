@@ -40,7 +40,7 @@ def processar():
         java.principal()
         codigo_gerado = java.nome()
         arquivo = os.path.join('codigo', codigo_gerado)
-        shutil.make_archive(arquivo, 'zip', 'codigo/'+ codigo_gerado)
+        shutil.make_archive(saida_path_java, 'zip', arquivo)
         os.rename(f"codigo/{codigo_gerado}", saida_path_java)
         return send_file(saida_path_java+'.zip', as_attachment=True, download_name="codigo.zip")
 
