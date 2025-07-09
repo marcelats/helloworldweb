@@ -18,7 +18,9 @@ def processar():
     uploaded = request.files['arquivo']
     lang = request.form['lang'].strip()
     entrada_path = f"/tmp/{uuid.uuid4().hex}.gv"
-    saida_path = f"/tmp/{uuid.uuid4().hex}.py"
+    saida_path_py = f"/tmp/{uuid.uuid4().hex}.py"
+    saida_path_java = os.path.join('/tmp', uuid.uuid4().hex)
+    saida_path_r = f"/tmp/{uuid.uuid4().hex}.r"
 
     uploaded.save(entrada_path)
     logging.basicConfig(level=logging.INFO)
@@ -28,29 +30,27 @@ def processar():
     if lang == 'Python':
         py = geradorPython.GeradorPython(entrada_path)
         py.principal()
-        name = py.nome()
         codigo_gerado = py.nome()
-        os.rename(f"codigo/{codigo_gerado}", saida_path)
+        os.rename(f"codigo/{codigo_gerado}", saida_path_py)
 
-        return send_file(saida_path, as_attachment=True, download_name="codigo.py")
+        return send_file(saida_path_py, as_attachment=True, download_name="codigo.py")
 
     elif lang == 'Java':
         java = geradorJava.GeradorJava(entrada_path)
         java.principal()
-        name = java.nome()
         codigo_gerado = java.nome()
-        os.rename(f"codigo/{codigo_gerado}", saida_path)
-
-        return send_file(saida_path, as_attachment=True, download_name="codigo.java")
+        arquivo = os.path.join('codigo', codigo_gerado)
+        shutil.make_archive(arquivo, 'zip', 'codigo/'+ codigo_gerado)
+        os.rename(f"codigo/{codigo_gerado}", saida_path_java)
+        return send_file(saida_path_java+'.zip', as_attachment=True, download_name="codigo.zip")
 
     else:
         r = geradorR.GeradorR(entrada_path)
         r.principal()
-        name = r.nome()
         codigo_gerado = r.nome()
-        os.rename(f"codigo/{codigo_gerado}", saida_path)
+        os.rename(f"codigo/{codigo_gerado}", saida_path_r)
 
-        return send_file(saida_path, as_attachment=True, download_name="codigo.r")
+        return send_file(saida_path_r, as_attachment=True, download_name="codigo.r")
 
 
 app.run(host="0.0.0.0", port=8000)
