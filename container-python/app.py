@@ -1,3 +1,4 @@
+import zipfile
 import subprocess
 import tempfile
 import os
@@ -10,13 +11,6 @@ def executar():
     code = request.files['arquivo']
     lang = request.form['lang'].strip()
     logging.basicConfig(level=logging.INFO)
-    logging.info(f"lang recebido: {repr(request.form['lang'])}")
-
-    if not lang:
-        return jsonify({'error': 'lang required'}),400
-
-    if not code:
-        return jsonify({'error': 'code required'}), 401
 
     with tempfile.TemporaryDirectory() as tmpdir:
         if lang == 'Python':
@@ -26,14 +20,36 @@ def executar():
             cmd = ['python3', file_path]
 
         elif lang == 'Java':
-            file_path = os.path.join(tmpdir, 'code.java')
-            with open(file_path, 'w') as f:
-                f.write(code.read().decode())
-            # Compilar Java
-            compile_proc = subprocess.run(['javac', file_path], capture_output=True, text=True)
+            javasim_jar = os.path.abspath('javasim-2.3.jar')
+            zip_path = os.path.join(tmpdir, 'codigo.zip')
+            code.save(zip_path)
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(tmpdir)
+            compile_proc = subprocess.run(
+                ['javac', '-cp', javasim_jar, '*.java'],
+                cwd=tmpdir,
+                capture_output=True,
+                text=True,
+                shell=True  # necessário por causa do *.java
+            )
             if compile_proc.returncode != 0:
                 return jsonify({'error': compile_proc.stderr}), 400
-            cmd = ['java', '-cp', tmpdir, 'Main']
+            cmd = [
+                'java',
+                '-cp',
+                f'.:{javasim_jar}',
+                'Main'
+            ]    
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    cwd=tmpdir,
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )   
+            except subprocess.TimeoutExpired:
+                return jsonify({'error': 'Execução excedeu o tempo limite'}), 408
         
         else:
             file_path = os.path.join(tmpdir, 'code.R')
