@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.exemplo.App</mainClass>
+                            <mainClass>com.frames.JanelaRedes</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
