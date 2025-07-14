@@ -1,5 +1,5 @@
 package com.gerador;
-import graph.Graph;
+import com.graph.Graph;
 
 /**
  * Classe abstrata gerador que cont   m os m   todos necess   rios para
