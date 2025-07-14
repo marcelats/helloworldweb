@@ -3,7 +3,7 @@ package com.graph;
 import java.util.Vector;
 import javax.swing.*;
 
-import avaliador.AvaliadorNivelUmA;
+import com.avaliador.AvaliadorNivelUmA;
 
 import java.awt.Point;
 import java.io.*;
