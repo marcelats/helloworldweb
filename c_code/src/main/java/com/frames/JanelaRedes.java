@@ -20,8 +20,9 @@ import com.graph.Node;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
-
+import io.javalin.Javalin;
+import io.javalin.http.UploadedFile;
+import java.io.*;
 /**
  * Classe que extende Janela e implementa as funcionalidades para modelagem
  * baseada na teoria de redes de filas
@@ -40,10 +41,29 @@ public class JanelaRedes {
 	 * @param args
 	 */
 	public static void main(String[] args) {
- 
-		String lang = args[1];
+ 		Javalin app = Javalin.create().start(8000);
+
+		app.post("/processar", ctx -> {
+            // 1. Recebe o parâmetro string (ex: nome do usuário)
+            String lang = ctx.formParam("lang");
+            if (lang == null) {
+                ctx.status(400).result("Parâmetro 'lang' é obrigatório");
+                return;
+            }
+
+            // 2. Recebe o arquivo
+            UploadedFile arquivo = ctx.uploadedFile("arquivo");
+            if (arquivo == null) {
+                ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
+                return;
+            }
+
+            // 3. Lê o conteúdo do arquivo (opcional)
+            String entradaTexto;
+            try (InputStream is = arquivo.getContent()) {
+                entradaTexto = new String(is.readAllBytes());
+            }
 		Graph graph = new Graph();
-		String path = args[0];
 		String filename = null;
 		try{		
 
@@ -52,7 +72,7 @@ public class JanelaRedes {
 		float[] tChegada;
 		String nomeGrafo = "", tExec = "",numCiclos = "", tamBatch = "", maxEntidades = "", 
 		tipoModelo = "", warmUp = "", tWarmup = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = new BufferedReader(new StringReader(entradaTexto))) {
             String linha;
             while ((linha = br.readLine()) != null) {
                 linha = linha.trim();
@@ -72,121 +92,121 @@ public class JanelaRedes {
                         String[] partes = matcher.group(1).trim().split(" ");
                         if (partes.length >= 8) {
                             tExec = partes[0];
-							numCiclos = partes[1];
-							tamBatch = partes[2];
-							maxEntidades = partes[3];
-							tipoModelo = partes[4];
-							warmUp = partes[5];
-							tWarmup = partes[6]; 
+				numCiclos = partes[1];
+				tamBatch = partes[2];
+				maxEntidades = partes[3];
+				tipoModelo = partes[4];
+				warmUp = partes[5];
+				tWarmup = partes[6]; 
                         }
                     }
-					graph.setTempoExecucao(tExec);
-					graph.setNumeroCiclos(numCiclos);
-					graph.setTamanhoBatch(tamBatch);
-					graph.setNumeroMaximoEntidades(maxEntidades);
-					graph.setTipoModelo(tipoModelo);
-					graph.setWarmUp(warmUp);
-					graph.setTamWarmUp(tWarmup);
+			graph.setTempoExecucao(tExec);
+			graph.setNumeroCiclos(numCiclos);
+			graph.setTamanhoBatch(tamBatch);
+			graph.setNumeroMaximoEntidades(maxEntidades);
+			graph.setTipoModelo(tipoModelo);
+			graph.setWarmUp(warmUp);
+			graph.setTamWarmUp(tWarmup);
 					
 					//set seed??? talvez o nome seja sequencia e é para cada um dos nos e nao pro grafo inteiro
                 }
 				
                 // 2. Ler nós com colchetes: 0 [label=... comment=" ... "]
                 else if (linha.matches("\\d+\\s*\\[.*comment=.*\\]")) {
-					int indexEspaco = linha.indexOf(" ");
-					String nodeIdStr = linha.substring(0, indexEspaco).trim();
-					int nodeId = Integer.parseInt(nodeIdStr);
+			int indexEspaco = linha.indexOf(" ");
+			String nodeIdStr = linha.substring(0, indexEspaco).trim();
+			int nodeId = Integer.parseInt(nodeIdStr);
 
-					String comment = null;
+			String comment = null;
 
-					// Expressão para capturar comment com ou sem aspas
-					Pattern pattern = Pattern.compile("comment=\\s*(\"[^\"]*\"|[^\\s\\]]+)");
-					Matcher matcher = pattern.matcher(linha);
+			// Expressão para capturar comment com ou sem aspas
+			Pattern pattern = Pattern.compile("comment=\\s*(\"[^\"]*\"|[^\\s\\]]+)");
+			Matcher matcher = pattern.matcher(linha);
 
-					if (matcher.find()) {
-						comment = matcher.group(1);
-						if (comment.startsWith("\"") && comment.endsWith("\"")) {
-							comment = comment.substring(1, comment.length() - 1); // remove aspas
-						}
-					}
-					//tem que testar e arrumar um monte de coisa
-					//tem que mexer no código da nathalia e da sarita para que ele funcione sem GUI
-					//ou vai testando pela GUI mesmo, enfim
-					String[] partes = comment.trim().split("\\s+"); // divide por espaços múltiplos
-					int tipo = -1;
-					if (partes.length==1) {tipo = Integer.parseInt(partes[0]);}
-					int distChegada = -1;
-					int distServico = -1;
-					String mediaChegada = "";
-					String mediaServico = "";
-					String numberOfServers = "";
-					Boolean filaVazia = false;
-					Boolean maxMin = false;
-					String sequencia = "";
-					String sequenciaFonte = "";
-					String desvioPadrao = "";
-					String desvioPadraoFonte = "";
-					// Se você souber quantos valores esperar, pode armazenar em variáveis:
-					if (partes.length >= 5) {
-						tipo = Integer.parseInt(partes[0]);
-						distChegada = Integer.parseInt(partes[1]);
-						distServico = Integer.parseInt(partes[2]);
-						mediaChegada = partes[3];
-						mediaServico = partes[4];
-						numberOfServers = partes[5];
-						filaVazia = Boolean.parseBoolean(partes[6]);
-						maxMin = Boolean.parseBoolean(partes[7]);
-						sequencia = partes[8];
-						sequenciaFonte = partes[9];
-						desvioPadrao = partes[10];
-						desvioPadraoFonte = partes [11];
-					}
-					if(tipo==1||tipo==3){
-						Node node = new Node(0,0,null,tipo,nodeId,"");
-						node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
-						graph.addNode(node);}
-					else 
-					{
-						Node node = new Node(0,0,null,tipo,nodeId,"CS");
-						switch(distServico)
-						{	case 0:
-								node.setDistribuicaoServico("normal");
-								break;
-							case 1:
-								node.setDistribuicaoServico("expntl");
-								break;
-							case 2:
-								node.setDistribuicaoServico("uniform");
-								break;
-							default:
-								node.setDistribuicaoServico("expntl");}
-						switch(distChegada)
-						{	case 0:
-								node.setDistribuicaoChegada("normal");
-								break;
-							case 1:
-								node.setDistribuicaoChegada("expntl");
-								break;
-							case 2:
-								node.setDistribuicaoChegada("uniform");
-								break;
-							default:
-								node.setDistribuicaoChegada("expntl");}
-						node.setMediaFonte(mediaChegada);
-						node.setMedia(mediaServico);
-						node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
-						graph.addNode(node);//o que é int chega em Node? numero de dos que saem desse no, isso sera descoberto a seguir
-						node.setNumServidores(numberOfServers);
-						node.setEstatisticaFilaVazia(filaVazia);
-						node.setComprimentoMaxMin(maxMin);
-						node.setSequencia(sequencia);
-						node.setMediaFonte(mediaChegada);
-						node.setSequenciaFonte(sequenciaFonte);
-						node.setDesvioPadrao(desvioPadrao);
-						node.setDesvioPadraoFonte(desvioPadraoFonte);
-					}
-
+			if (matcher.find()) {
+				comment = matcher.group(1);
+				if (comment.startsWith("\"") && comment.endsWith("\"")) {
+					comment = comment.substring(1, comment.length() - 1); // remove aspas
 				}
+			}
+			//tem que testar e arrumar um monte de coisa
+			//tem que mexer no código da nathalia e da sarita para que ele funcione sem GUI
+			//ou vai testando pela GUI mesmo, enfim
+			String[] partes = comment.trim().split("\\s+"); // divide por espaços múltiplos
+			int tipo = -1;
+			if (partes.length==1) {tipo = Integer.parseInt(partes[0]);}
+			int distChegada = -1;
+			int distServico = -1;
+			String mediaChegada = "";
+			String mediaServico = "";
+			String numberOfServers = "";
+			Boolean filaVazia = false;
+			Boolean maxMin = false;
+			String sequencia = "";
+			String sequenciaFonte = "";
+			String desvioPadrao = "";
+			String desvioPadraoFonte = "";
+			// Se você souber quantos valores esperar, pode armazenar em variáveis:
+			if (partes.length >= 5) {
+				tipo = Integer.parseInt(partes[0]);
+				distChegada = Integer.parseInt(partes[1]);
+				distServico = Integer.parseInt(partes[2]);
+				mediaChegada = partes[3];
+				mediaServico = partes[4];
+				numberOfServers = partes[5];
+				filaVazia = Boolean.parseBoolean(partes[6]);
+				maxMin = Boolean.parseBoolean(partes[7]);
+				sequencia = partes[8];
+				sequenciaFonte = partes[9];
+				desvioPadrao = partes[10];
+				desvioPadraoFonte = partes [11];
+			}
+			if(tipo==1||tipo==3){
+				Node node = new Node(0,0,null,tipo,nodeId,"");
+				node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
+				graph.addNode(node);}
+			else 
+			{
+				Node node = new Node(0,0,null,tipo,nodeId,"CS");
+				switch(distServico)
+				{	case 0:
+						node.setDistribuicaoServico("normal");
+						break;
+					case 1:
+						node.setDistribuicaoServico("expntl");
+						break;
+					case 2:
+						node.setDistribuicaoServico("uniform");
+						break;
+					default:
+						node.setDistribuicaoServico("expntl");}
+				switch(distChegada)
+				{	case 0:
+						node.setDistribuicaoChegada("normal");
+						break;
+					case 1:
+						node.setDistribuicaoChegada("expntl");
+						break;
+					case 2:
+						node.setDistribuicaoChegada("uniform");
+						break;
+					default:
+						node.setDistribuicaoChegada("expntl");}
+				node.setMediaFonte(mediaChegada);
+				node.setMedia(mediaServico);
+				node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
+				graph.addNode(node);//o que é int chega em Node? numero de dos que saem desse no, isso sera descoberto a seguir
+				node.setNumServidores(numberOfServers);
+				node.setEstatisticaFilaVazia(filaVazia);
+				node.setComprimentoMaxMin(maxMin);
+				node.setSequencia(sequencia);
+				node.setMediaFonte(mediaChegada);
+				node.setSequenciaFonte(sequenciaFonte);
+				node.setDesvioPadrao(desvioPadrao);
+				node.setDesvioPadraoFonte(desvioPadraoFonte);
+			}
+
+		}
 
 
                 // 3. Ler arestas: 0 -> 2
@@ -207,76 +227,76 @@ public class JanelaRedes {
 			arc.setProbabilidade(probabilidade);
         }
     
-					}else if (linha.contains("Arrivals")){
-						String[] partes = linha.trim().split("\\s+");
-						nChegadas = Integer.parseInt(partes[1]);
-							System.out.println(nChegadas + " chegadas");
-							nClientes = new int[nChegadas];
-							tChegada = new float[nChegadas];
-							cs = new int[nChegadas];
-							for(int i = 0; i < nChegadas; i++)
-							{
-								nClientes[i] = Integer.parseInt(partes[2+i*3]);
-								tChegada[i] = Float.parseFloat(partes[3+i*3]);
-								cs[i] = Integer.parseInt(partes[4+i*3]);
-								graph.addChegada(new Chegada(nClientes[i], tChegada[i], cs[i]));
-								System.out.println("Chegada " + i + ": " + nClientes[i] +" " + tChegada[i] + " " +cs[i]+"\n");
-							}}
-					
+		}else if (linha.contains("Arrivals")){
+			String[] partes = linha.trim().split("\\s+");
+			nChegadas = Integer.parseInt(partes[1]);
+				System.out.println(nChegadas + " chegadas");
+				nClientes = new int[nChegadas];
+				tChegada = new float[nChegadas];
+				cs = new int[nChegadas];
+				for(int i = 0; i < nChegadas; i++)
+				{
+					nClientes[i] = Integer.parseInt(partes[2+i*3]);
+					tChegada[i] = Float.parseFloat(partes[3+i*3]);
+					cs[i] = Integer.parseInt(partes[4+i*3]);
+					graph.addChegada(new Chegada(nClientes[i], tChegada[i], cs[i]));
+					System.out.println("Chegada " + i + ": " + nClientes[i] +" " + tChegada[i] + " " +cs[i]+"\n");
+				}
+			}
                 }
             
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-		System.out.println("Texec: "+graph.getTempoExecucao());
-			System.out.println("nome modelo: "+graph.getNomeModelo());
-			System.out.println("n ciclos: "+graph.getNumeroCiclos());
-			System.out.println("n max entidades: "+graph.getNumeroMaximoEntidades());
-			System.out.println("tam batch: "+graph.getTamanhoBatch());
-			System.out.println("bool warmup: "+graph.getWarmUp());
-			System.out.println("warmup time: "+graph.getTamWarmUp());
-			System.out.println("modelo aberto, fechado ou misto: "+graph.getTipoModelo());
-			System.out.println("n chegadas :"+graph.getChegadaSize());
-			for (int i = 0; i <graph.getChegadaSize(); i++) {
-				
-    			System.out.println("num clientes do "+i+": "+graph.getChegada(i).getNumeroClientes());
-				System.out.println("tempo chegada do "+i+": "+graph.getChegada(i).getTempoChegada());
-				System.out.println("indice do "+i+": "+graph.getChegada(i).getNodeIndex());
-			}
-			System.out.println("num nos: "+graph.getSize());
-			for (int i = 0; i <graph.getSize(); i++) {
-				
-    			System.out.println(graph.getNode(i));
-				System.out.println(i+" tipo no: "+graph.getTipoNo(i));
-				System.out.println(i+" ID no: "+graph.getIdNo(i));
-				System.out.println(i+" num arcos: "+graph.getNode(i).getSize());
-				System.out.println(i+" nome centro serviço: "+graph.getNode(i).getNomeCentroServico());
-				System.out.println(i+" distribuicao chegada: "+graph.getNode(i).getDistribuicaoChegada());
-				System.out.println(i+" distribuicao servico: "+graph.getNode(i).getDistribuicaoServico());
-				System.out.println(i+" bool tempo resposta: "+graph.getNode(i).getTempoResposta());
-				System.out.println(i+" bool throughput: "+graph.getNode(i).getThroughput());
-				System.out.println(i+" bool tamanho fila: "+graph.getNode(i).getTamanhoFila());
-				System.out.println(i+" bool estatistica fila vazia: "+graph.getNode(i).getEstatisticaFilaVazia());
-				System.out.println(i+" bool comp max min: "+graph.getNode(i).getComprimentoMaxMin());
-				System.out.println(i+" num filas: "+graph.getNode(i).getNumFilas());
-				System.out.println(i+" num servidores: "+graph.getNode(i).getNumServidores());
-				System.out.println(i+" media: "+graph.getNode(i).getMedia());
-				System.out.println(i+" num voltas: "+graph.getNode(i).getNumVoltas());
-				System.out.println(i+" sequencia: "+graph.getNode(i).getSequencia());
-				System.out.println(i+" media fonte: "+graph.getNode(i).getMediaFonte());
-				System.out.println(i+" sequencia fonte: "+graph.getNode(i).getSequenciaFonte());
-				System.out.println(i+" num arestas: "+graph.getNode(i).getChega());
-				System.out.println(i+" desvio padrao: "+graph.getNode(i).getDesvioPadrao());
-				System.out.println(i+" ponto mais provavel: "+graph.getNode(i).getPontoMaisProvavel());
-				System.out.println(i+" desvio padrao fonte: "+graph.getNode(i).getDesvioPadraoFonte());
-				System.out.println(i+" ponto mais provavel fonte: "+graph.getNode(i).getPontoMaisProvavelFonte());
-				System.out.println(i+" tid: "+graph.getNode(i).getTid());
-		
-				for (int j = 0; j <graph.getNode(i).getSize(); j++) {
-				System.out.println(i+" "+j+ " id no destino: "+graph.getNode(i).getArc(j).getIdNoArc());
-				System.out.println(i+" "+j+ " probabilidade: "+graph.getNode(i).getArc(j).getProbabilidade());}
-			}
+	System.out.println("Texec: "+graph.getTempoExecucao());
+		System.out.println("nome modelo: "+graph.getNomeModelo());
+		System.out.println("n ciclos: "+graph.getNumeroCiclos());
+		System.out.println("n max entidades: "+graph.getNumeroMaximoEntidades());
+		System.out.println("tam batch: "+graph.getTamanhoBatch());
+		System.out.println("bool warmup: "+graph.getWarmUp());
+		System.out.println("warmup time: "+graph.getTamWarmUp());
+		System.out.println("modelo aberto, fechado ou misto: "+graph.getTipoModelo());
+		System.out.println("n chegadas :"+graph.getChegadaSize());
+		for (int i = 0; i <graph.getChegadaSize(); i++) {
+			
+		System.out.println("num clientes do "+i+": "+graph.getChegada(i).getNumeroClientes());
+			System.out.println("tempo chegada do "+i+": "+graph.getChegada(i).getTempoChegada());
+			System.out.println("indice do "+i+": "+graph.getChegada(i).getNodeIndex());
+		}
+		System.out.println("num nos: "+graph.getSize());
+		for (int i = 0; i <graph.getSize(); i++) {
+			
+		System.out.println(graph.getNode(i));
+			System.out.println(i+" tipo no: "+graph.getTipoNo(i));
+			System.out.println(i+" ID no: "+graph.getIdNo(i));
+			System.out.println(i+" num arcos: "+graph.getNode(i).getSize());
+			System.out.println(i+" nome centro serviço: "+graph.getNode(i).getNomeCentroServico());
+			System.out.println(i+" distribuicao chegada: "+graph.getNode(i).getDistribuicaoChegada());
+			System.out.println(i+" distribuicao servico: "+graph.getNode(i).getDistribuicaoServico());
+			System.out.println(i+" bool tempo resposta: "+graph.getNode(i).getTempoResposta());
+			System.out.println(i+" bool throughput: "+graph.getNode(i).getThroughput());
+			System.out.println(i+" bool tamanho fila: "+graph.getNode(i).getTamanhoFila());
+			System.out.println(i+" bool estatistica fila vazia: "+graph.getNode(i).getEstatisticaFilaVazia());
+			System.out.println(i+" bool comp max min: "+graph.getNode(i).getComprimentoMaxMin());
+			System.out.println(i+" num filas: "+graph.getNode(i).getNumFilas());
+			System.out.println(i+" num servidores: "+graph.getNode(i).getNumServidores());
+			System.out.println(i+" media: "+graph.getNode(i).getMedia());
+			System.out.println(i+" num voltas: "+graph.getNode(i).getNumVoltas());
+			System.out.println(i+" sequencia: "+graph.getNode(i).getSequencia());
+			System.out.println(i+" media fonte: "+graph.getNode(i).getMediaFonte());
+			System.out.println(i+" sequencia fonte: "+graph.getNode(i).getSequenciaFonte());
+			System.out.println(i+" num arestas: "+graph.getNode(i).getChega());
+			System.out.println(i+" desvio padrao: "+graph.getNode(i).getDesvioPadrao());
+			System.out.println(i+" ponto mais provavel: "+graph.getNode(i).getPontoMaisProvavel());
+			System.out.println(i+" desvio padrao fonte: "+graph.getNode(i).getDesvioPadraoFonte());
+			System.out.println(i+" ponto mais provavel fonte: "+graph.getNode(i).getPontoMaisProvavelFonte());
+			System.out.println(i+" tid: "+graph.getNode(i).getTid());
+	
+			for (int j = 0; j <graph.getNode(i).getSize(); j++) {
+			System.out.println(i+" "+j+ " id no destino: "+graph.getNode(i).getArc(j).getIdNoArc());
+			System.out.println(i+" "+j+ " probabilidade: "+graph.getNode(i).getArc(j).getProbabilidade());}
+		}
     }
 	catch (Exception e){	
 			e.printStackTrace();
@@ -290,35 +310,49 @@ public class JanelaRedes {
 		} 
 		Gerador gerador;
 		if ( lang.equals("SMPL"))
-					{
-						gerador = new GeradorSMPL(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito("gabaritos/GABARITO.DAT");											
-					}
-					else if (lang.equals("ParSMPL"))
-					{
-						gerador = new GeradorParSMPL(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito(null); // n o precisa passar gabarito, o gerador   quem controla
-					}
-					else if ( lang.equals("SMPLX"))
-					{
-						gerador = new GeradorSMPLX(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito("gabaritos/GABARITO_SMPLX.DAT");					
-					}
-					else if (lang.equals("SIMPACK"))
-					{
-						gerador = new GeradorSIMPACK(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito("gabaritos/GABARITO_SIMPACK.DAT");				
-					}
-					else if ( lang.equals("SIMPACK2"))
-					{
-						gerador = new GeradorSIMPACK2(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito("gabaritos/GABARITO_SIMPACK2.DAT");
-					}
+		{
+			gerador = new GeradorSMPL(graph);
+			gerador.criaArquivo();
+			gerador.leGabarito("gabaritos/GABARITO.DAT");											
+		}
+		else if (lang.equals("ParSMPL"))
+		{
+			gerador = new GeradorParSMPL(graph);
+			gerador.criaArquivo();
+			gerador.leGabarito(null); // n o precisa passar gabarito, o gerador   quem controla
+		}
+		else if ( lang.equals("SMPLX"))
+		{
+			gerador = new GeradorSMPLX(graph);
+			gerador.criaArquivo();
+			gerador.leGabarito("gabaritos/GABARITO_SMPLX.DAT");					
+		}
+		else if (lang.equals("SIMPACK"))
+		{
+			gerador = new GeradorSIMPACK(graph);
+			gerador.criaArquivo();
+			gerador.leGabarito("gabaritos/GABARITO_SIMPACK.DAT");				
+		}
+		else if ( lang.equals("SIMPACK2"))
+		{
+			gerador = new GeradorSIMPACK2(graph);
+			gerador.criaArquivo();
+			gerador.leGabarito("gabaritos/GABARITO_SIMPACK2.DAT");
+		}	
+
+            // 5. Grava em arquivo temporário
+            File arquivoSaida = File.createTempFile("saida_", ".txt");
+            try (FileWriter writer = new FileWriter(arquivoSaida)) {
+                writer.write(saidaTexto);
+            }
+
+            // 6. Envia o arquivo de volta como download
+            ctx.contentType("application/octet-stream");
+            ctx.header("Content-Disposition", "attachment; filename=\"saida.txt\"");
+            ctx.result(new FileInputStream(arquivoSaida));
+        });
+		
+		
 		
 	}
 	
