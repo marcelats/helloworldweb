@@ -1,11 +1,11 @@
 package com.gerador;
 
 
-import graph.Chegada;
-import graph.Graph;
-import graph.Node;
-import graph.ProcessoLogicoParSMPL;
-import graph.QueueL;
+import com.graph.Chegada;
+import com.graph.Graph;
+import com.graph.Node;
+import com.graph.ProcessoLogicoParSMPL;
+import com.graph.QueueL;
 
 import java.io.BufferedReader;
 import java.io.File;
