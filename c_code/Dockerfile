@@ -1,15 +1,20 @@
+# Etapa 1: build com Maven
+FROM maven:3.8.6-openjdk-11-slim AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package
 # Dockerfile
 
-FROM openjdk:11
+FROM openjdk:11-jre-slim
 
 WORKDIR /app
 
 # Copia os arquivos fonte
-COPY src/ ./src/
+COPY --from=builder /app/target/meu-projeto-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
 
-# Compila os arquivos Java
-RUN javac src/*.java -d out
+EXPOSE 8000
 
 # Define o comando padrão
-CMD ["java", "-cp", "out", "Main"]
+CMD ["java", "-jar", "app.jar"]
 
