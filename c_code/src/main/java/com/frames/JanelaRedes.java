@@ -7,16 +7,16 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gerador.Gerador;
-import gerador.GeradorParSMPL;
-import gerador.GeradorSIMPACK;
-import gerador.GeradorSIMPACK2;
-import gerador.GeradorSMPL;
-import gerador.GeradorSMPLX;
-import graph.Arc;
-import graph.Chegada;
-import graph.Graph;
-import graph.Node;
+import com.gerador.Gerador;
+import com.gerador.GeradorParSMPL;
+import com.gerador.GeradorSIMPACK;
+import com.gerador.GeradorSIMPACK2;
+import com.gerador.GeradorSMPL;
+import com.gerador.GeradorSMPLX;
+import com.graph.Arc;
+import com.graph.Chegada;
+import com.graph.Graph;
+import com.graph.Node;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
