@@ -65,7 +65,7 @@ public class JanelaRedes {
 
             // 3. Lê o conteúdo do arquivo (opcional)
             String entradaTexto;
-            try (InputStream is = arquivo.getContent()) {
+            try (InputStream is = arquivo.content()) {
                 entradaTexto = new String(is.readAllBytes());
             }
 		Graph graph = new Graph();
