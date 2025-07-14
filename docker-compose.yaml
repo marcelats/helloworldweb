@@ -47,7 +47,15 @@ services:
     ports:
       - "8001:8000"
     networks:
-      - app-network      
+      - app-network  
+      
+  java-app:
+    build: ./c_code
+    container_name: meu-java   
+    ports:
+      - "8002:8000"
+    networks:
+      - app-network
 
 volumes:
   pgdata:
