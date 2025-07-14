@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 import com.gerador.Gerador;
 import com.gerador.GeradorParSMPL;
@@ -341,15 +346,24 @@ public class JanelaRedes {
 		}	
 
             // 5. Grava em arquivo temporário
-            File arquivoSaida = File.createTempFile("saida_", ".txt");
-            try (FileWriter writer = new FileWriter(arquivoSaida)) {
-                writer.write(saidaTexto);
-            }
+            String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
+
+        // Caminho de origem
+        Path origem = Path.of(codigoGerado);
+
+        // Caminho de destino (UUID + extensão .py)
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        Path destino = Path.of("/tmp", uuid + ".c");
+
+        // Move (ou renomeia) o arquivo
+        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+
+        System.out.println("Arquivo movido para: " + destino.toString());
 
             // 6. Envia o arquivo de volta como download
             ctx.contentType("application/octet-stream");
-            ctx.header("Content-Disposition", "attachment; filename=\"saida.txt\"");
-            ctx.result(new FileInputStream(arquivoSaida));
+            ctx.header("Content-Disposition", "attachment; filename=\"code.c\"");
+            ctx.result(new FileInputStream(destino.toFile()));
         });
 		
 		
