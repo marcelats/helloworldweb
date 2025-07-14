@@ -1,0 +1,1808 @@
+package gerador;
+
+
+import graph.Chegada;
+import graph.Graph;
+import graph.Node;
+import graph.ProcessoLogicoParSMPL;
+import graph.QueueL;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+
+
+
+/**
+ *  Classe que gera código na extensão funcional SMPL (MacDougall).
+ *  @author André Felipe Rodrigues
+ *  @version 1.0
+ */
+
+public class GeradorSIMPACK2 extends Gerador {
+	
+	public static final String TAXA_SERVICO = "Ts";
+	public static final String TAXA_CHEGADA = "Ta";
+		
+	private boolean auxiliarLinhaNotDefinedYet;
+	private boolean alreadyClosed;
+	
+	
+	private boolean stopByUsers;
+	private int numClientes;
+	private String antigoMaxClientes;
+	/**
+	 * Variável utilizada para armazenar as informações que serão gravadas no arquivo de  
+	 * saída.
+	 */
+	private StringBuffer buffer = new StringBuffer(120);	
+	
+	
+	/**
+	 * Para impressão do relatório de estatísticas
+	 */
+		
+	/* Definição de constantes */	
+	private static final int tempoExecDefault = 20000;
+	private static final String pontoVirgula = ";";
+	
+	private Controler c;
+	
+	
+	
+	/**
+	 * Construtor da Classe.
+	 * @param graph Recebe o modelo que irá gerar o programa de simulação.
+	 */
+	public GeradorSIMPACK2(Graph graph) {
+  	
+	  super(graph);
+	  auxiliarLinhaNotDefinedYet = true;	 
+	  alreadyClosed = false;
+	  stopByUsers = false;
+	  
+	  int numInitReq = 2, numInitRel = 3;
+		int contFonte = 0;
+		
+		
+		for (int i = 0; i < graph.getSize(); i++){ // conta o número de fontes do grafo
+			if (graph.getNode(i).isPrimRec()){
+				contFonte++;																		
+			}
+		}
+		
+		numInitReq = contFonte+1;
+		numInitRel = contFonte+2;		
+		
+		
+		c = new Controler(graph, numInitReq, numInitRel); // gera números de case apropriados para request e release de cada centro de serviço
+	}
+
+	
+	/**
+	 * Cria o arquivo que irá conter o programa de simulação.
+	 */
+	public void criaArquivo(){
+		
+		filename = graph.getNomeModelo();
+		
+		filename = "src/" +  filename + ".cpp";
+			File f = new File(filename);		
+			if (f.exists()) 
+				f.delete();
+
+	}
+
+
+	
+	/**
+	 * Cria o Makefile do ParSMPL de acordo com os nomes dos arquivos criados
+	 * 
+	 */
+	private void criaMakeFile()
+	{
+		File f = new File("exec/tmp/Makefile");
+
+		
+		if (f.exists())
+			f.delete();
+		
+			try {
+				FileWriter fw = new FileWriter(f,true);				
+				FileReader fr = new FileReader("gabaritos/MAKEFILESIMPACK.DAT");
+				BufferedReader gab = new BufferedReader(fr);
+				String linha = new String();
+				while (( linha = gab.readLine()) != null)
+				{
+					if (linha.indexOf("%")!=0) //copiar toda a linha
+					{
+						fw.write(linha);	
+						fw.write("\n");
+					}
+					else
+					{
+						switch (linha.charAt(1))
+						{
+							case '1':
+								fw.write(new String("PROG = " + graph.getNomeModelo()));
+								
+								fw.write("\n");
+								break;
+							case '2':
+								//	fw.write("INCLUDE = exec/simpack/func/event/include")
+								break;
+							case '3':
+								//
+								break;
+						    
+						}
+					}
+				}
+					fw.close();
+				
+				
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(
+						null,
+						"ASDA - ERRO",
+						"Não foi possível criar arquivo Makefile.aimk",
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			
+			
+		}
+		
+	
+	
+	/**
+	 * Quando tempo de warm-up é definido como automático, ele é setado como 5%
+	 * do tempo total de simulação
+	 * @return
+	 */
+	private double generateWarmUpTime()
+	{
+		if ((graph.getTempoExecucao() != null) && (graph.getTamWarmUp().equals("0")))
+		{
+			double valor;
+			valor = 0.05*Double.parseDouble(graph.getTempoExecucao());
+			return valor;
+		}
+		else
+			return 0;
+	}
+	
+	
+	/**
+	 * Grava o valor da variável buffer no arquivo.
+	 * @param buffer Variável que contém as informações a serem gravadas no arquivo.
+	 */
+	private void gravaArquivo(StringBuffer buffer) {
+				
+		
+		try {          
+            
+			FileWriter out = new FileWriter(new File(filename),true);
+			out.write(buffer.toString());
+			out.write('\n');
+			
+			out.close();
+            
+		} catch(IOException ex) {
+			ex.printStackTrace();
+		}
+	}//
+
+	
+
+	/**
+	 * Gera o comando para limitar a execução da simulação:
+	 * - por tempo;
+	 * - por número de clientes que deixam o sistema ou
+	 * - pelo número de ciclos do cliente no sisema.
+	 */
+	private void defineTempoMax(){
+		// definição do tempo máximo da simulação
+		buffer.delete(0,119);
+		buffer.append(" float Te = ");
+		if (graph.getTempoExecucao().equals("0")){
+			JOptionPane.showMessageDialog(
+					null,
+					"Tempo de simulação definido automaticamente\n" +
+					"Tempo padrão = " + tempoExecDefault,
+					"Tempo de execução não especificado",
+					JOptionPane.INFORMATION_MESSAGE);
+			graph.setTempoExecucao(String.valueOf(tempoExecDefault));
+		}
+		buffer.append(graph.getTempoExecucao());
+		buffer.append(pontoVirgula);
+		gravaArquivo(buffer);	
+
+	}
+	
+	private void defineMaximoClientes()
+	{
+		buffer.delete(0,119);
+		
+		stopByUsers = valueOfStopByUsers(); // temos agora stopByUsers e numClientes;
+		if (numClientes > 1) // se mais de um cliente, coloca numero maximo de clientes como numClientes
+			                 // mesmo se o usuário tinha definido um número para o número máximo de clientes
+							// nesse caso, ele teria sido inconsistente em sua modelagem
+		{
+			antigoMaxClientes = graph.getNumeroMaximoEntidades();		
+			graph.setNumeroMaximoEntidades(String.valueOf(numClientes));
+		}
+		
+		if ( (graph.getNumeroMaximoEntidades() != null) && (!graph.getNumeroMaximoEntidades().equals("0")) ) {
+			buffer.append(" unsigned int Maximo_Entidades = 0, Num_Max_Entidades = ");
+			buffer.append(graph.getNumeroMaximoEntidades());
+			buffer.append(";");
+			gravaArquivo(buffer);
+		}
+	}
+	
+	private void defineVarWarmUp()
+	{
+		
+		buffer.delete(0,119);
+		buffer.append(" char flag_reset = 0;\n");
+		buffer.append(" float timeWarmUp = ");
+		if ( (graph.getTamWarmUp() != null ) && (!graph.getTamWarmUp().equals("0")) ){
+			buffer.append(graph.getTamWarmUp());			
+		}
+		else
+		{
+			buffer.append(String.valueOf(generateWarmUpTime()));
+		}
+		buffer.append(pontoVirgula);
+		gravaArquivo(buffer);
+		
+		
+	}
+	
+	/**
+	 * Gera o comando para determinar qual a seqüência a ser utilizada na geração do 
+	 * número aleatório. Quando o comando smpl é executado a seqüência é setada para 1 
+	 * e incrementada a medida em que é utilizada.
+	 * @param sequencia Um valor <code>Integer</code> compreendido no intervalo 1..15.
+	 * @param espaco Para formatação do arquivo de saída.
+	 */
+	private void geraStream(int indice, String espaco,boolean fonte){
+		
+		if (!fonte)
+		{
+			if ( (graph.getNode(indice).getSequencia() != null) && (!graph.getNode(indice).getSequencia().equals("0")))
+			{	buffer.delete(0,119);
+				buffer.append(espaco);
+				buffer.append("stream(");
+				buffer.append(graph.getNode(indice).getSequencia());
+				buffer.append(");");
+				gravaArquivo(buffer);
+			}
+		}
+		else
+		{
+			if ( (graph.getNode(indice).getSequenciaFonte() != null) && (!graph.getNode(indice).getSequenciaFonte().equals("0")))
+			{
+				buffer.delete(0,119);
+				buffer.append(espaco);
+				buffer.append("stream(");
+				buffer.append(graph.getNode(indice).getSequenciaFonte());
+				buffer.append(");");
+				gravaArquivo(buffer);
+			}
+			
+		}
+	}
+	
+	
+	/**
+	 * Gera a primitiva break.
+	 *
+	 */
+	private void geraBreak(){
+		
+		buffer.delete(0,119);
+		buffer.append("         }\n          break;");
+		gravaArquivo(buffer);
+			
+	}
+
+	
+	/**
+	 * Gera as variáveis para os tempos médios entre chegadas e serviço.
+	 *
+	 */
+	private void defineVarTempos(){
+		
+		buffer.delete(0,119);
+		
+		String nomeA = "Ta"; 	// Taxa Arrival
+		String nomeB = "Ts";	// Taxa service
+		
+		buffer.delete(0,119);
+		buffer.append(" float ");
+				
+		
+
+		
+		// define tempo de chegada de centros de serviços que são primeiro recurso
+		for (int i = 0; i < graph.getSize(); i++)
+		{   // Centro de serviço de chegada			
+			if ((graph.getNode(i).getTipoNo() == 2) && (graph.getNode(i).isPrimRec())){
+				buffer.append(nomeA);
+				buffer.append(String.valueOf(graph.getNode(i).getIdNo()));
+				buffer.append(" = ");
+				buffer.append(graph.getNode(i).getMediaFonte());
+			}	
+		}				
+			
+		for (int i = 0; i< graph.getSize(); i++)
+		{	// Define a taxa de serviço de todos centros de serviços
+			if (graph.getNode(i).getTipoNo() == 2){
+				buffer.append(", ");
+				buffer.append(nomeB);
+				buffer.append(String.valueOf(graph.getNode(i).getIdNo()));
+				buffer.append(" = ");
+				buffer.append(graph.getNode(i).getMedia());
+			}
+		}
+		buffer.append(";\n");
+		buffer.append(" int i = 0;\n");
+		gravaArquivo(buffer);
+		
+	}
+
+
+	
+	/**
+	 * Gera as variáveis para as definições dos recursos que compoem o modelo a ser 
+	 * implementado.
+	 *
+	 */
+	private void defineVarServer(){
+		
+		buffer.delete(0,119);
+		buffer.append(" Facility ");
+		
+		
+		for (int i = 0; i < graph.getSize(); i++){
+			if (graph.getNode(i).getTipoNo() == 2){		
+				buffer.append("*"+graph.getNode(i).getNomeCentroServico());
+				buffer.append(", ");
+			}			
+		}
+		// retira ultima virgula
+		int temp = buffer.lastIndexOf(", ");
+		buffer.delete(temp, buffer.length());
+		// adiciona o ponto e vírgula
+		buffer.append(";");
+		gravaArquivo(buffer);
+			        
+
+	}
+	
+	/*
+	 * Método de auxílio para não redefinir a mesma linha no código usado
+	 * para os dois tipos de estatísticas
+	 */
+	private void defineLinhaTotClientes()
+	{
+		if (auxiliarLinhaNotDefinedYet)
+		{
+			buffer.delete(0,119);
+			buffer.append(" unsigned int Total_Clientes = 0; ");
+			gravaArquivo(buffer);
+			
+			auxiliarLinhaNotDefinedYet = false;
+		}
+	}
+
+
+	/**
+	 * Define as variáveis que serão utilizadas para os cálculos estatísticos:
+	 * tamanho máximo e mínimo da fila associada ao recurso especificado.
+	 *
+	 */
+	private void defineEstatMaxMin(){
+		
+		String nomeMax = "Max";
+		String nomeMin = "Min";
+		
+		
+		buffer.delete(0,119);
+		int cont = 0;
+		
+		int i = 0;
+		for (i=0; i< graph.getSize(); i++) {
+			if ( (graph.getNode(i).getTipoNo() == 2) && (graph.getNode(i).getComprimentoMaxMin()) )
+				cont++;
+		}
+		
+		if (cont != 0) // só gera se o grafo define estatísticas
+		{
+			buffer.append(" unsigned int ");
+			
+			for (i = 0; i < graph.getSize(); i++)
+			{
+				Node temp = graph.getNode(i);
+				if (  (temp.getTipoNo() == 2) && (temp.getComprimentoMaxMin()) ) // o nó mede estatística fila vazia
+				{
+					buffer.append(nomeMax);
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0");
+					buffer.append(", ");
+					buffer.append(nomeMin);
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 1000");
+					cont--;
+					if (cont == 0) // não tem mais variáveis para adicionar, finaliza com ;
+						buffer.append(";");
+					else
+						buffer.append(",");							
+				}				
+			}
+			gravaArquivo(buffer);
+			
+			defineLinhaTotClientes();
+		}	
+	}
+	
+	/**
+	 * Define as variáveis que serão utilizadas para os cálculos estatísticos: porcentagem
+	 * de vezes em que o cliente encontra a fila vazia, associada ao recurso especificado.
+	 */
+	private void defineEstatFilaVazia(){
+		
+		String nomeTotal = "Tot";
+		String nomeVaz = "Vaz";
+		
+		
+		buffer.delete(0,119);
+		int cont = 0;
+		
+		int i = 0;
+		for (i=0; i< graph.getSize(); i++) {
+			if ( (graph.getNode(i).getTipoNo() == 2) && (graph.getNode(i).getEstatisticaFilaVazia()) )
+				cont++;
+		}
+		
+		if (cont != 0) // só gera se o grafo define estatísticas
+		{
+			buffer.append(" unsigned int ");
+			
+			for (i = 0; i < graph.getSize(); i++)
+			{
+				Node temp = graph.getNode(i);
+				if (  (temp.getTipoNo() == 2) && (temp.getEstatisticaFilaVazia()) ) // o nó mede estatística fila vazia
+				{
+					buffer.append(nomeTotal);
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0");
+					buffer.append(", ");
+					buffer.append(nomeVaz);
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0");
+					cont--;
+					if (cont == 0) // não tem mais variáveis para adicionar, finaliza com ;
+						buffer.append(";");
+					else
+						buffer.append(",");							
+				}				
+			}
+			gravaArquivo(buffer);
+			
+			defineLinhaTotClientes();
+		}		
+		
+	}
+	
+	/**
+	 * Define as variáveis necessárias para utilizar o método de análise Batch Means.
+	 *
+	 */
+	private void defineBMeans(){
+		if ( (graph.getTamanhoBatch() != null) && (!graph.getTamanhoBatch().equals("0")) ){
+			buffer.delete(0,119);
+			buffer.append(" float TBatch = 0;\n");
+			buffer.append(" int r = 0;");
+			gravaArquivo(buffer);
+		}
+	}
+	
+	
+	//sem fila
+	/*public void defineReesc(){
+		
+		
+		
+	}
+	
+	//sem fila
+	public void defineVarBackoff(){
+		
+		int flag = 1;
+		long ind = 1;
+		
+		
+	}*/
+	
+	
+	/**
+	 * Declara e abre para escrita o arquivo de saída no código do programa de simulação.
+	 * Este arquivo de saída conterá o relatório da simulação.
+	 */
+	private void defineArqSaida(){
+		
+		buffer.delete(0,119);
+		buffer.append(" FILE *p, *saida;\n");
+		buffer.append(" saida = fopen(\"");
+		buffer.append(graph.getNomeModelo());
+		buffer.append(".out\",\"w\");\n"); // chegou a quase 100 caracteres já
+		gravaArquivo(buffer);
+		buffer.delete(0,119);
+		buffer.append(" if ((p = sendto(saida)) == NULL)\n");
+		buffer.append("    printf(\"Erro na saida \\n\");");
+		gravaArquivo(buffer);
+		
+		
+	}
+	
+	/**
+	 * Gera o comando SMPL para a inicialização do modelo de simulação.
+	 *
+	 */
+	private void nomeParametro(){
+		
+		buffer.delete(0,119);
+		buffer.append(" new Future(LINKED);");
+	//	buffer.append(graph.getNomeModelo());
+	//	buffer.append("\");");
+		gravaArquivo(buffer);
+		
+	}
+	
+	
+	/**
+	 * Gera o comando <code>facility</code> para a definição dos recursos que compoem o 
+	 * sistema.
+	 */
+	private void geraDefServer(){
+		
+		for (int i = 0; i < graph.getSize() ; i++)
+		{			
+			if (graph.getNode(i).getTipoNo() == 2){				
+				buffer.delete(0,119);
+				buffer.append(" ");
+				buffer.append(graph.getNode(i).getNomeCentroServico());
+				buffer.append(" = new Facility(\"");
+				buffer.append(graph.getNode(i).getNomeCentroServico());
+	/*			buffer.append("\","); 
+				buffer.append(graph.getNode(i).getNumServidores());
+				buffer.append(");");
+				*/
+				buffer.append("\");");
+				gravaArquivo(buffer);				
+			}		
+			
+		}
+		
+	}
+	
+	/**
+	 * Seta o valor de stopByUsers e ainda o retorna apropriadamente
+	 * Se o criador da simulação coloca mais de um cliente chegando no sistema na mão,
+	 * então a simulação deve ser parada pelo numero máximo de clientes, mesmo que ele não queira
+	 * porque senão a simulação geraria resultados não muito verdadeiros
+	 * seta também o número de clientes apropriado do sistema
+	 * @return
+	 */
+	private boolean valueOfStopByUsers()
+	{
+		stopByUsers = false;
+		numClientes = 0;
+		
+		if (graph.getChegadaSize() > 1)
+		{
+			stopByUsers = true;
+		}
+		
+		for (int i=0; i < graph.getChegadaSize(); i++)
+		{
+			
+			Chegada temp = graph.getChegada(i);
+			numClientes += temp.getNumeroClientes();
+			if (temp.getNumeroClientes() > 1)
+				stopByUsers = true;
+		}
+		return stopByUsers;
+		
+	}
+	
+	/**
+	 * Escalona o primeivo evento a ocorrer no caso de sistema com uma única entrada, ou todos
+	 * os eventos que devem ser escalonados antes do início da simulação para modelos de
+	 * sistemas fechados.
+	 */
+	private void geraPrimeiroEvento(){
+			
+		int id, numCase = 1;
+		//numClientes = 0;
+
+		
+		buffer.delete(0,119);
+		
+		for (int i = 0; i < graph.getSize(); i++){ // conta o número de fontes do grafo e acerta os numCase
+			if (graph.getNode(i).isPrimRec()){
+				id = graph.getNode(i).getIdNo();
+				c.setCase(numCase,id);
+			    numCase++;
+			}
+		}
+		
+		if (graph.getTipoModelo().equals("aberto")){
+				
+			if (graph.getChegadaSize() >= 1)
+			{
+				for (int i = 0; i < graph.getChegadaSize(); i++)
+				{
+					Chegada temp = graph.getChegada(i);
+					if (temp.getNumeroClientes() > 1)
+					{
+						buffer.append("   for (i = 0; i < ");
+						buffer.append(temp.getNumeroClientes());
+						buffer.append(" ; i++)\n");
+						buffer.append("      Future::Schedule(");
+	
+					}
+					else 
+						buffer.append("   Future::Schedule(");
+				
+					buffer.append(c.getCase(graph.getNode(temp.getNodeIndex()).getIdNo()) + ",");
+					buffer.append(temp.getTempoChegada());
+					buffer.append(", Customer);");
+					gravaArquivo(buffer);
+					buffer.delete(0,119);
+				}
+			}
+			
+		}		
+	}
+	
+	/**
+	 * Gera o comando de repetição, limitando a simulação por:
+	 * - tempo,
+	 * - número de clientes que passam pelo sistema,
+	 * - número de voltas no sistema 
+	 * - método de análise Batch Means.
+	 *
+	 */
+	private void geraLoop(){
+		
+		buffer.delete(0,119);
+
+		if ( (graph.getNumeroCiclos() != null) && (!graph.getNumeroCiclos().equals("0")) ) {
+			buffer.append(" while (Num_Voltas <= Num_Max_Voltas) ");
+		} 
+		else {
+			if (  ( (graph.getTempoExecucao() != null) && (!graph.getTempoExecucao().equals("0") )
+					&& (graph.getNumeroMaximoEntidades().equals("0") ) )  ) 
+			{
+				buffer.append(" while ( (Future::SimTime() < Te) "); // somente por tempo
+				
+				if ( (graph.getTamanhoBatch() != null) && (!graph.getTamanhoBatch().equals("0")) ){
+					buffer.append("&& (r == 0) )");
+				} else {
+					buffer.append(")");
+				}
+			}
+			else {
+				if ( ((graph.getTempoExecucao().equals("0") || (graph.getTempoExecucao()==null)) )
+						&& (graph.getNumeroMaximoEntidades() != null)) {
+					buffer.append(" while ((Maximo_Entidades < Num_Max_Entidades) ");
+					if (graph.getTamanhoBatch() != null) {
+						buffer.append("&& (r == 0) )");
+					} else {
+						buffer.append(")");
+					}
+				} else {
+					buffer.append(" while( (Future::SimTime() < Te) && (Maximo_Entidades < Num_Max_Entidades)");
+					if ( (graph.getTamanhoBatch() != null) && (!graph.getTamanhoBatch().equals("0")) ) {
+						buffer.append("&& (r== 0) )");
+					} else {
+						buffer.append(")");
+					}
+				}
+			}
+		}		
+		gravaArquivo(buffer);
+			
+	}
+	
+	/**
+	 * Implementa o comando <code>cause</code>.
+	 * 
+	 */
+	private void geraCause(){
+		
+		buffer.delete(0,119);
+		buffer.append("    Estatus es = Future::NextEvent();");
+		gravaArquivo(buffer);
+		
+	}
+	
+	/**
+	 * Gera o comando <code>switch</code>.
+	 *
+	 */
+	private void geraSwitch(){
+		buffer.delete(0,119);
+		buffer.append("    switch(es.event_id)");
+		gravaArquivo(buffer);	
+		
+	}
+	
+	/**
+	 * Gera a primitiva case.
+	 * @param numeroEvento Um valor <code>Integer</code>.
+	 */
+	private void geraCase(int numeroEvento){
+		
+		buffer.delete(0,119);
+		buffer.append("        case ");
+		buffer.append(numeroEvento);
+		buffer.append(" : \n         {");
+		gravaArquivo(buffer);
+	}
+	
+		
+	private void geraUpdateArrivals(String espaco)
+	{
+		buffer.delete(0,119);
+		buffer.append(espaco + "Future::UpdateArrivals();");
+		gravaArquivo(buffer);
+	}
+	
+	private void geraCurrentCustomer()
+	{
+		
+		buffer.delete(0,119);
+		buffer.append("          Token Customer = Future::CurrentToken();");
+		gravaArquivo(buffer);
+	}
+	/**
+	 * Gera o comando schedule para o primeiro recurso.
+	 * @param numeroEvento
+	 * @param numeroRecurso Um valor <code>Integer</code> que indica o recurso corrente. (indice do nodes graph)
+	 */
+
+	private void geraProximaChegada(int numReq, int numeroRecurso, int numEvento){
+		
+		buffer.delete(0,119);
+	/*	buffer.append("        {\n");
+		gravaArquivo(buffer);
+		buffer.delete(0,119);*/
+		// geraSchedule(numReq,numeroRecurso,false,null);
+		geraCurrentCustomer();
+		geraUpdateArrivals("          ");
+		
+		geraSchedule(numReq,"0.0","          ");
+		
+		geraStream(numeroRecurso,"          ", true);
+		
+		geraIncrementCustomerID();
+		
+	    if (numClientes == 1)
+	    {
+			buffer.delete(0,119);
+			String secParam = geraStringSchedule(numeroRecurso,true);
+			geraSchedule(numEvento,secParam,"          ");
+	    	buffer.delete(0,119);
+	    }
+			
+	}	
+	
+	/**
+	 * Função que gera o reset para o warm-up
+	 *
+	 */
+	private void geraWarmUp()
+	{
+		buffer.delete(0,119);
+		buffer.append("   if ( (!flag_reset) && (time() > timeWarmUp) )\n   {");
+		gravaArquivo(buffer);
+		buffer.delete(0,119);
+		buffer.append("      reset();\n");
+		buffer.append("      flag_reset = 1;");
+		gravaArquivo(buffer);
+		
+		buffer.delete(0,119);
+		
+		
+		// resetando valores de Fila Vazia e Comprimento Max/Min
+		boolean totClientes = false;
+		boolean temEst;
+		boolean ident;
+		
+		for (int i = 0; i < graph.getSize(); i++)
+		{
+			Node temp = graph.getNode(i);
+			if (temp.getTipoNo() == 2)
+			{
+				ident = false;
+				temEst = false;
+				if (temp.getComprimentoMaxMin()) // especifica comprimento max/min
+				{
+					totClientes = true;
+					temEst = true;
+					buffer.append("      Max");
+					ident = true;
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0; ");
+					buffer.append("Min");
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 1000; ");
+				}
+				
+				if (temp.getEstatisticaFilaVazia())
+				{
+					totClientes = true;
+					temEst = true;
+					if (!ident)
+						buffer.append("      Tot"); // conserto de identação
+					else
+						buffer.append("Tot");
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0; ");
+					buffer.append("Vaz");
+					buffer.append(temp.getIdNo());
+					buffer.append(" = 0;");					
+				}
+				
+				if (temEst) //temEst serve para identificar se houve necessidade 
+				{								// de geração de código para esse cs
+					gravaArquivo(buffer);
+					buffer.delete(0,119);
+				}
+			}
+		}
+
+		if (totClientes)
+		{
+			buffer.delete(0,119);
+			buffer.append("      Total_Clientes = 0;");
+			gravaArquivo(buffer);
+			
+		}
+		
+		if ( (graph.getNumeroMaximoEntidades()!=null) && (!graph.getNumeroMaximoEntidades().equals("0")))
+		{
+			buffer.delete(0,119);
+			buffer.append("      Maximo_Entidades = 0;");
+			gravaArquivo(buffer);
+		}
+		
+		buffer.delete(0,119);
+		buffer.append("   }");
+		gravaArquivo(buffer);		
+		
+	}
+	
+	private void geraBatch(String distribuicao)
+	{
+		buffer.delete(0,119);
+		buffer.append("             ");
+		buffer.append("TBatch = ");
+		buffer.append(distribuicao);
+		buffer.append(";\n");
+		buffer.append("             ");
+		buffer.append(" r = obs(TBatch);");
+		gravaArquivo(buffer);		
+	}
+	
+
+	/**
+	 * Gera a linha: schedule (destino, distri(TsIDCS), Customer); se true
+	 * 			   e schedule (destino, 0.0, Customer); se false
+	 * @param destino 
+	 * @param numeroRecurso
+	 * @param distribuicao true o false
+	 * @author André Felipe Rodrigues
+	 */
+	/*private void geraSchedule(int destino, int numeroRecurso, boolean distribuicao, String tipo)
+	{
+		buffer.delete(0,119);
+		buffer.append("            schedule(");
+		buffer.append(destino+", ");
+		if (distribuicao)
+		{
+			buffer.append(graph.getNode(numeroRecurso).getDistribuicaoServico());
+			buffer.append("(" + tipo);
+			buffer.append(graph.getNode(numeroRecurso).getIdNo()+ ")");			
+		}
+		else
+			buffer.append(" 0.0");
+		
+		buffer.append(", Customer);");
+		gravaArquivo(buffer);		
+	}*/
+	
+	
+	/**
+	 * gera schedule adicionado para a utilização de outras probabilidades (hiperexponencial, etc)
+	 * @param destino primeiro parametro do schedule
+	 * @param tempo segundo parametro do schedule
+	 * @param espaco o tanto de espaço de identação que se quer dar
+	 * @author André Felipe Rodrigues
+	 */
+	
+	private String geraStringSchedule(int indice, boolean chegada)
+	{
+		String ret = "0.0";
+		Node temp = graph.getNode(indice);
+		if (chegada)
+		{
+			if (temp.isPrimRec())
+			{
+				if (temp.getDistribuicaoChegada().equals("expntl"))
+				{
+					ret = temp.getDistribuicaoChegada() 
+						+ "(" + GeradorSMPL.TAXA_CHEGADA 
+						+ temp.getIdNo() 
+						+ ")";					
+				}
+				else if ( (temp.getDistribuicaoChegada().equals("hyperx")) 
+							|| (temp.getDistribuicaoChegada().equals("normal")) 
+							|| (temp.getDistribuicaoChegada().equals("erlang"))
+							|| (temp.getDistribuicaoChegada().equals("uniform"))
+							)
+				{
+					ret = temp.getDistribuicaoChegada() 
+					+ "(" + GeradorSMPL.TAXA_CHEGADA 
+					+ temp.getIdNo() 
+					+ ", "
+					+ temp.getDesvioPadraoFonte()
+					+ ")";	
+				}				
+			}
+		}
+		else
+		{
+			if (temp.getDistribuicaoServico().equals("expntl"))
+			{
+				ret = temp.getDistribuicaoServico() 
+					+ "(" + GeradorSMPL.TAXA_SERVICO 
+					+ temp.getIdNo() 
+					+ ")";					
+			}
+			else if ( (temp.getDistribuicaoServico().equals("hyperx")) 
+						|| (temp.getDistribuicaoServico().equals("normal")) 
+						|| (temp.getDistribuicaoServico().equals("erlang"))
+						|| (temp.getDistribuicaoServico().equals("uniform"))
+						)
+			{
+				ret = temp.getDistribuicaoServico() 
+				+ "(" + GeradorSMPL.TAXA_SERVICO 
+				+ temp.getIdNo() 
+				+ ", "
+				+ temp.getDesvioPadrao()
+				+ ")";	
+			}	
+			
+		}		
+		return ret;
+		
+	}
+	
+	private void geraSchedule(int destino, String tempo, String espaco)
+	{
+		buffer.delete(0,119);
+		buffer.append(espaco);
+		buffer.append("Future::Schedule(" + destino + ",");
+		buffer.append(tempo);
+		buffer.append(", Customer);");
+		gravaArquivo(buffer);		
+	}
+	
+	/**
+	 * Implementa a primitiva para a liberacao do recurso (facilidade).
+	 * @param numeroEvento 
+	 * @param numeroRecurso Um valor <code>Integer</code> que indica o recurso corrente.
+	 */
+	private void geraRequest(int numeroRecurso){
+	
+				
+		/*if (graph.getNode(numeroRecurso).getComprimentoMaxMin() == true){
+			geraEstatisticaMaxMin(numeroRecurso);
+		}
+		if (graph.getNode(numeroRecurso).getEstatisticaFilaVazia() == true){
+			geraEstatisticaFilaVazia(numeroRecurso);
+		}*/
+		buffer.delete(0,119);
+		buffer.append("          if (" + 
+				graph.getNode(numeroRecurso).getNomeCentroServico() + 
+				"->Request(");
+		buffer.append("Customer) == FREE)");
+		gravaArquivo(buffer);
+
+	}
+	
+	
+	private void geraUpdateCompletions(String espaco)
+	{
+		buffer.delete(0,119);
+		buffer.append(espaco+"Future::UpdateDepartures();");
+		gravaArquivo(buffer);
+	}
+	
+	private void geraIncrementCustomerID()
+	{
+		buffer.delete(0,119);
+		buffer.append("          Customer.Id(Customer.Id() + 1);");
+		gravaArquivo(buffer);
+	}
+	
+	private void geraDefault()
+	{
+		
+		buffer.delete(0,119);
+		buffer.append("      default: ErrXit(1,\"bad event id\");");
+		gravaArquivo(buffer);
+	}
+	
+	
+	/**
+	 * Gera o comando <code>release</code> para a liberação do recurso.
+	 * @param numeroRecurso Um valor <code>Integer</code> que indica o recurso corrente. 
+	 * @param numeroEvento Um valor <code>Integer</code>.
+	 * @param totalRecurso Um valor <code>Integer</code> que indica o número de recursos 
+	 */
+	private void geraRelease(int numeroRecurso){		
+		buffer.delete(0,119);
+		buffer.append("          "+ graph.getNode(numeroRecurso).getNomeCentroServico() 
+				+ "->Release( Customer.Id() );");
+		
+		gravaArquivo(buffer);
+	}
+	
+	
+	private void geraContagemMaximoEntidades(int indice, String espaco)
+	{
+		if ( (graph.getNumeroMaximoEntidades()!= null) && (!graph.getNumeroMaximoEntidades().equals("0")) )
+		{	
+			buffer.delete(0,119);
+			if (espaco!=null)
+				buffer.append(espaco);
+			buffer.append("          Maximo_Entidades++;");
+			gravaArquivo(buffer);
+		}
+	}
+	
+	private void geraCodeEstatisticas(int indice)
+	{
+		buffer.delete(0,119);
+		
+		Node temp = graph.getNode(indice);
+	/*	if ( (temp.getEstatisticaFilaVazia()) || (temp.getComprimentoMaxMin()) )
+		{	
+			buffer.append("          Total_Clientes = inq(");
+			buffer.append(temp.getNomeCentroServico());
+			buffer.append(");");
+			gravaArquivo(buffer);
+			buffer.delete(0,119);
+		}
+
+		buffer.delete(0,119);
+		
+		if (temp.getComprimentoMaxMin())
+		{
+			buffer.append("          if (Total_Clientes > Max");
+			buffer.append(temp.getIdNo());
+			buffer.append(")\n");
+			buffer.append("             Max");
+			buffer.append(temp.getIdNo());
+			buffer.append(" = Total_Clientes;\n");
+			buffer.append("         else\n");
+			buffer.append("          if (Total_Clientes < Min");
+			buffer.append(temp.getIdNo());
+			buffer.append(")\n");
+			buffer.append("             Min");
+			buffer.append(temp.getIdNo());
+			buffer.append(" = Total_Clientes;");
+			gravaArquivo(buffer);
+			buffer.delete(0,119);
+			
+		}
+		
+		
+		buffer.delete(0,119);
+		*/
+		if (temp.getEstatisticaFilaVazia())
+		{
+			buffer.append("          if (status(" + temp.getNomeCentroServico() + ")==FREE)");
+			buffer.append("              Vaz");
+			buffer.append(temp.getIdNo());
+			buffer.append("++;\n");
+			buffer.append("          Tot");
+			buffer.append(temp.getIdNo());
+			buffer.append("++;");
+			gravaArquivo(buffer);
+			buffer.delete(0,119);
+		}
+			
+	}
+	
+	private int correctID(int id)
+	{
+		int ret = -1;
+		
+		for (int i = 0; ((i < graph.getSize()) && (ret == -1)); i++)
+			if (graph.getNode(i).getIdNo() == id)
+				ret = i;
+		
+		return ret;
+		
+	}
+
+	private void geraIfAleatorio(int numInicial, int numFinal)
+	{
+		buffer.delete(0,119);
+		buffer.append("          if (( " + 
+				numInicial + " <= Aleatorio) && ( Aleatorio <= " + numFinal + ") )");
+		gravaArquivo(buffer);
+		
+	}
+	
+	private void geraComentario(String comment, String espaco)
+	{
+		buffer.delete(0,119);
+		if ((comment != null) && (espaco != null))
+			buffer.append("\n" + espaco + "/* " + comment + " */" );
+		gravaArquivo(buffer);
+		buffer.delete(0,119);
+		
+	}
+	
+	/**
+	 * Método que analisa e verifica se já houve empilhamento do centro de serviço
+	 * @param v Vetor que armazena o id de nós que já foram empilhados
+	 * @param id O valor do id do centro de serviço que está consultando
+	 * @return Retorna true se já foi empilhado, e false caso contrário
+	 * @author André Felipe Rodrigues
+	 */
+	private boolean jahFoiEmpilhado(Vector v, int id)
+	{
+		boolean flag = false;
+		int i = 0;
+		boolean ret;
+
+		if (v.size() == 0 ) // se vetor vazio
+			ret = false;
+		else
+		{
+			while ( (!flag) && ( i < v.size()) ) // percorre o vetor
+			{
+				String temp = (String)v.get(i);
+				if ( Integer.parseInt(temp) == id ) // achou ocorrência do id no vetor
+					flag = true;
+				else
+					i++;
+			}		
+			ret = ( i < v.size() ? true : false );
+		}		
+		return ret;
+	}
+	
+	private void geraChaves(String espaco, boolean abre)
+	{
+		buffer.delete(0,119);
+		if (abre)
+			buffer.append(espaco + "{");
+		else
+			buffer.append(espaco + "}");
+		gravaArquivo(buffer);
+	}
+	/**
+	 * Gera os eventos que constituem a simulação.
+	 * @author André Felipe Rodrigues
+	 *
+	 */
+	private void geraEventos(){
+		
+		int id = 0;		// variável que armazena o id do nó que está gerando eventos
+		int indice;		// variável que armazena o indice desse nó no vetor de nós do grafo - corretivo
+		int numCase;
+		
+		QueueL stack = new QueueL(); 		// pilha que armazena os centros de seriço que serão processados
+		Vector jahEmpilhados = new Vector(0); // armazena os id de centros de serviços que já foram processados
+		
+		for (int i = 0; i < graph.getSize(); i++){ // conta o número de fontes do grafo
+			if (graph.getNode(i).isPrimRec()){
+				id = graph.getNode(i).getIdNo();
+				indice = correctID(id);
+				numCase = c.getCase(id);
+				geraCase(numCase);
+			    geraProximaChegada(c.getRequest(id),indice,numCase);
+				if (!jahFoiEmpilhado(jahEmpilhados, id))  // verifica se o id do cs já foi empilhado antes
+				{	stack.push(String.valueOf(id)); // armazendo como Strings pq é object
+					jahEmpilhados.add(String.valueOf(id));
+				}
+				geraBreak();
+			}
+		}		
+		
+		
+		// ***** laço de geração de todos eventos *******
+		while (!stack.isEmpty()) // enquanto a pilha não está vazia
+		{
+			
+			id = Integer.parseInt((String)stack.pop()); // desempilha
+			
+			indice = correctID(id);	 
+			
+			// gerando comentário do centro de serviço
+			geraComentario(" centro de serviço = " 
+					+ graph.getNode(indice).getNomeCentroServico(),"        ");
+			
+			// ****** gerando request  ****
+			geraCase(c.getRequest(id)); // gerando request do nó com identificação id			
+			
+	//		geraCodeEstatisticas(indice);
+	//		geraStream(indice,"          ", false);
+			geraCurrentCustomer();
+			geraRequest(indice);
+			String secParam = geraStringSchedule(indice,false);
+	/*		if ( (graph.getTamanhoBatch()!=null) && (!graph.getTamanhoBatch().equals("0")) )
+			{
+				geraChaves("          ",true);
+				geraBatch(secParam);
+				geraSchedule(c.getRelease(id),"TBatch","             ");
+				geraChaves("          ", false);
+			}
+			else // para gerar estatísticas Batch */
+				geraSchedule(c.getRelease(id),secParam,"             ");
+				
+			geraBreak();
+				
+			// **** liberação do recurso ****
+			geraCase(c.getRelease(id)); 
+			geraCurrentCustomer();
+			geraRelease(indice);
+
+			
+			// ****** verifica as conexões do grafo e gera os schedule apropriados ********
+			if (graph.getNode(indice).getSize() >= 2) // tem duas ligações - tbém tem que verificar fim do grafo
+			{
+				graph.getNode(indice).setProb(true);
+				if (graph.getNode(indice).isProb()) // se é por probabilidade
+				{
+					buffer.delete(0,119);
+					buffer.append("          Aleatorio = random(1,10000);");
+					gravaArquivo(buffer);
+					int cont = 0;
+					int limiteInf = 1;
+					int limiteSup;
+					int idTemp; //,indiceProx ;
+					while (cont < graph.getNode(indice).getSize() )
+					{
+						if (graph.getNode(indice).getArc(cont).getNodeB().getTipoNo() == 2) // é centro de serviço
+						{
+							double tempNumber;
+							tempNumber = Double.parseDouble(graph.getNode(indice).getArc(cont).getProbabilidade());
+							tempNumber = tempNumber*100 + limiteInf - 1;
+							limiteSup = (int)tempNumber;
+														
+							geraIfAleatorio(limiteInf, limiteSup);
+							limiteInf = limiteSup + 1;
+							idTemp = graph.getNode(indice).getArc(cont).getNodeB().getIdNo();
+							//indiceProx = correctID(idTemp);
+							// String secParam2 = geraStringSchedule(indiceProx,false);
+							geraSchedule(c.getRequest(idTemp),"0.0","           ");
+							buffer.delete(0,119); 
+							
+							if (!jahFoiEmpilhado(jahEmpilhados, idTemp)) // depois de gerado if, empilha o recurso
+							{
+								stack.push(String.valueOf(idTemp)); // empilha recurso	
+								jahEmpilhados.add(String.valueOf(idTemp));
+							}							
+						}
+						else
+						{
+							if ( 	(graph.getNode(indice).getArc(cont).getNodeB().getTipoNo() == 3) 
+									&& (graph.getNumeroMaximoEntidades()!= null) 
+									&& (!graph.getNumeroMaximoEntidades().equals("0")) ){ // está ligado ao nó final e gera MaximoEntidades
+								double tempNumber;
+								tempNumber = Double.parseDouble(graph.getNode(indice).getArc(cont).getProbabilidade());
+								tempNumber = tempNumber*100 + limiteInf - 1;
+								limiteSup = (int)tempNumber;
+															
+								geraIfAleatorio(limiteInf, limiteSup);
+								limiteInf = limiteSup + 1;
+								geraContagemMaximoEntidades(indice,"   ");
+								geraUpdateCompletions("           ");
+								buffer.delete(0,119);
+							}							
+						}
+						cont++;	
+					}
+				}
+				geraBreak();
+			
+			}
+			else // só tem uma ligação possível - verificar se não é fim do grafo
+			{
+				if (graph.getNode(indice).getArc(0).getNodeB().getTipoNo() == 2) // não está ligado ao destino
+				{
+					Node temp = graph.getNode(indice).getArc(0).getNodeB();
+					id = temp.getIdNo();
+					indice = correctID(id);
+				//	String secParam2 = geraStringSchedule(indice,false);
+					geraSchedule(c.getRequest(id),"0.0" /*secParam2*/,"             ");
+					
+					if (!jahFoiEmpilhado(jahEmpilhados, id))
+					{
+						stack.push(String.valueOf(id)); // empilha recurso	
+						jahEmpilhados.add(String.valueOf(id));
+					}
+				}
+				else if (graph.getNode(indice).getArc(0).getNodeB().getTipoNo() == 3){ // está ligado a saída
+					geraContagemMaximoEntidades(indice,"");
+					geraUpdateCompletions("           ");
+				}
+				geraBreak();
+			}
+		}
+		geraDefault();
+	}
+	
+	private void fechaArquivo()
+	{
+		if (!alreadyClosed)
+		{
+			buffer.delete(0,119);
+			buffer.append("   fclose(saida);");
+			gravaArquivo(buffer);
+		}
+			
+	}
+	
+	/**
+	 * Gera o relatório final (padrão do smpl) no programa de simulação.
+	 *
+	 */
+	private void geraRelatorioFinal(){
+		
+		buffer.delete(0,119);
+		buffer.append("   Future::ReportStats();");
+		gravaArquivo(buffer);
+	}
+	
+	/**
+	 * Gera as variáveis (contadores) para o caso de número de voltas definidas para os 
+	 * clientes em um determinado servidor.
+	 *
+	 */
+/*	private void geraContadores(){
+		
+		String nomeContador = "N";
+		boolean flag = true;
+		
+		buffer.delete(0,119);
+		
+		int i = 0;
+		
+		while ((graph.getSize() > i) && (flag)){
+			
+			if (graph.getNode(i).isCiclo()){
+				
+				flag = false;
+				
+			}
+		}
+		
+		if (!flag){
+			
+			
+			
+			buffer.append("   unsigned int ");
+			
+			do{
+				
+				buffer.append(nomeContador);
+				buffer.append(graph.getNode(i).getIdNo());
+				buffer.append(" = ");
+				StringBuffer aux = new StringBuffer(graph.getNode(i).getNumVoltas());
+				buffer.append(aux.reverse()); 
+				i++;
+				if (graph.getSize() > i){
+					buffer.append(";");
+				}
+				else{
+					buffer.append(", ");
+				}
+				
+			} while(graph.getSize() > i);
+			gravaArquivo(buffer);
+			
+		}
+	}
+	*/
+	
+	
+	/**
+	 * Gera relatório com as estatísticas das filas dos recursos especificados pelo usuário.
+	 *
+	 */
+	private void geraRelatEstMaxMin(){
+		
+		buffer.delete(0,119);
+		
+		boolean title = false;
+		
+		for (int i = 0; i < graph.getSize(); i++)
+		{
+			Node temp = graph.getNode(i);
+			if (temp.getTipoNo() == 2)
+			{
+				if (temp.getComprimentoMaxMin()) // tem que gerar para ComprimentoMaxMin
+				{
+					buffer.delete(0,119);
+					if (!title)  // escreve título da geração de relatórios para esta estatística
+					{
+						buffer.append("   printf(\"\\n\\nRelatório - Máximo e Mínimo das Filas \\n \"); ");
+						gravaArquivo(buffer);
+						buffer.delete(0,119);
+						title = true;
+					}
+					
+					buffer.append("   printf(\"\\n Maximo clientes recurso "
+							+ temp.getNomeCentroServico() 
+							+ " : %i \", Max"
+							+ temp.getIdNo()
+							+ ");");
+					gravaArquivo(buffer);
+					
+					buffer.delete(0,119);
+					buffer.append("   printf(\"\\n Mínimo clientes recurso "
+							+ temp.getNomeCentroServico() 
+							+ " : %i \", Min"
+							+ temp.getIdNo()
+							+ ");");
+					gravaArquivo(buffer);
+				}
+								
+			}
+		}
+		
+	}
+		
+
+	/**
+	 * Gera relatório com as estatísticas das filas dos recursos especificados pelo usuário: 
+	 * porcentagem de vezes na qual o clienet encontra a fila vazia.
+	 */
+	private void geraRelatFilaVazia(){
+		
+		buffer.delete(0,119);
+		
+		boolean title = false;
+		
+		for (int i = 0; i < graph.getSize(); i++)
+		{
+			Node temp = graph.getNode(i);
+			if (temp.getTipoNo() == 2)
+			{
+				if (temp.getEstatisticaFilaVazia()) // tem que gerar para ComprimentoMaxMin
+				{
+					buffer.delete(0,119);
+					if (!title)  // escreve título da geração de relatórios para esta estatística
+					{
+						buffer.append("   printf(\"\\n\\nRelatório - Total de Vezes - Fila Vazia \\n \"); ");
+						gravaArquivo(buffer);
+						buffer.delete(0,119);
+						title = true;
+					}
+					
+					buffer.append("   printf(\"\\n Total de Clientes do recurso "
+							+ temp.getNomeCentroServico() 
+							+ " : %i \", Tot"
+							+ temp.getIdNo()
+							+ ");");
+					gravaArquivo(buffer);
+					
+					buffer.delete(0,119);
+					buffer.append("   printf(\"\\n Total clientes que encontraram fila vazia no recurso "
+							+ temp.getNomeCentroServico() 
+							+ " : %i \", Vaz"
+							+ temp.getIdNo()
+							+ ");");
+					gravaArquivo(buffer);
+				}
+								
+			}
+		}
+		
+	
+	}
+	
+	
+	
+	/**
+	 * Através dos comandos do arquivo GABARITO.DAT determina a próxima primitiva a 
+	 * ser executada.
+	 *
+	 */
+	public void leGabarito(String gabarito){		
+		FileReader arq;
+		try {
+			arq = new FileReader(gabarito);
+			BufferedReader sai = new BufferedReader(arq);		
+			String linha = new String();
+			while ((linha = sai.readLine()) != null){
+				if (linha.indexOf("%") != 0){ // se não começa com %, então copia toda a linha	
+					buffer.delete(0,119);
+					buffer.append(linha);
+					gravaArquivo(buffer);
+					buffer.delete(0,119);
+				}								
+				else{					
+					//primitivas do gerador devem ser executadas
+					switch (linha.charAt(1))
+					{
+						case '0': defineTempoMax(); 
+								  break;
+						case '1': //definições
+								  defineVarTempos(); 
+				//				  defineVarWarmUp(); sem warm-up por enquanto
+								  defineVarServer();
+				//				  defineEstatMaxMin();
+				//				  defineEstatFilaVazia();
+								  defineMaximoClientes();
+				//				  defineBMeans();
+				//				  defineArqSaida();	
+								  break;
+						case '2': nomeParametro();
+								break;
+								//definição dos recursos do modelo
+						case '3': geraDefServer();
+								break;
+								//escalona eventos antes do inicio da simulação
+						case '4': geraPrimeiroEvento(); 
+								break;
+								//limitante da simulação*/
+						case '5': geraLoop();
+								break;
+						case '6': geraCause();
+								break;
+						case '7': geraSwitch();
+								break;
+								//eventos que constituem a simulação
+						case '8': geraEventos();
+								break;
+								//relatório padrão - colocar o if
+						case '9': geraRelatorioFinal();
+								break;
+						/*		  //definições
+						case 'A': geraContadores();
+								  break;
+								  */
+								  //relatório de estatísticas
+						case 'C': geraRelatEstMaxMin();
+								  break;
+								  //relatório de estatísticas
+						case 'D': geraRelatFilaVazia();
+								  break;
+								
+								  //implementa warmup
+						case 'G': // geraWarmUp();
+								  break;
+						
+						case 'E': // fechaArquivo();
+								  break;
+						case 'Z':// geraEndSimulation();
+								  break;
+						
+						          
+					}
+				
+			}
+			
+			}
+			sai.close();
+
+			if (antigoMaxClientes!=null)
+			{
+				graph.setNumeroMaximoEntidades(antigoMaxClientes);
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+					
+	}
+	
+	/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& CLASSE INTERNA CONTROLER &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& */
+	/**
+	 * Classe interna que auxilia a geração de código
+	 * responsável por organizar o número do evento para cada nó (os cases)
+	 * Com essa classe agora é possível, sabendo-se o id do nó do grafo,
+	 * saber qual o número do evento request e release respectivos
+	 * @author André
+	 */
+	private class Controler
+	{
+		private int nRequest[];
+		private int nRelease[];
+		private int nCase[];
+		private int id[];
+		
+		
+		public Controler(Graph g)
+		{
+			this(g,2,3);
+		}
+		
+		/**
+		 * Construtor da classe Controler
+		 * Cria os vetores de armazenamento já com os valores corretos
+		 * para os releases e requests de cada nó.
+		 * @param g Grafo da classe gerador já consistente e existente
+		 */
+		public Controler(Graph g, int num1, int num2)
+		{
+			int n = 0;
+			
+			for (int i = 0; i < graph.getSize(); i++)
+			{
+				if (g.getNode(i).getTipoNo() == 2) // contagem dos nós centro de serviço
+					n++;
+			}
+			
+			nRequest = new int[n];  // alocagem de memória
+			nRelease = new int[n];
+			id = new int[n];
+			nCase = new int[n];
+			
+			for (int i=0; i < n; i++){ // zera todos valores nCase
+				nCase[i] = 0;
+			}
+			
+			int contador1=num1, contador2=num2; // contadores auxilires começando com 2 e 3
+			
+			for (int i = 0, j = 0; i < g.getSize(); i++)  // atribuição dos valores request e release
+			{
+				if (g.getNode(i).getTipoNo() == 2)
+				{
+					id[j] = g.getNode(i).getIdNo();
+					nRequest[j] = contador1;
+					nRelease[j] = contador2;
+					contador1 += 2;
+					contador2 += 2;					
+					j++;								
+				}
+			}
+		}
+		
+		/**
+		 * retorna o valor do case request para o no <code> idN </code>
+		 * @param idN id do nó que se quer saber o request especificado
+		 * @return retorna o valor do request especificado para idN
+		 * retorna 0 se não encontrado (note que não será gerado nenhum case 0:
+		 * portanto, o retorno de zero representa algum erro
+		 */
+		public int getRequest(int idN)
+		{
+			int retorno = 0;
+			int i = 0;
+			boolean flag = true;
+			while ( (flag) && (i < id.length)) // procura do nó pelo vetor
+			{
+				if (id[i] == idN)
+				{
+					retorno = nRequest[i];
+					flag = false;
+				}
+				i++;
+			}			
+			return retorno; 			
+		}
+		
+		/**
+		 * retorna o valor do case release para o no <code> idN </code>
+		 * @param idN id do nó que se quer saber o request especificado
+		 * @return retorna o valor do release especificado para idN
+		 * retorna 0 se não encontrado (note que não será gerado nenhum case 0:
+		 * portanto, o retorno de zero representa algum erro
+		 */
+		public int getRelease(int idN)
+		{
+			int retorno = 0;
+			int i = 0;
+			boolean flag = true;
+			while ( (flag) && (i < id.length))
+			{
+				if (id[i] == idN)
+				{
+					retorno = nRelease[i];
+					flag = false;
+				}
+				i++;
+			}			
+			return retorno;			
+		}
+		
+		/**
+		 * retorna o valor do case armazenado para o nó <code> idN </code>
+		 * @param idN id do nó que estamos procurando o valor do case
+		 * @return retorna o número do case apropriado para o nó
+		 */
+		public int getCase(int idN)
+		{
+			int retorno = 0;
+			int i = 0;
+			boolean flag = true;
+			while ( (flag) && (i < id.length))
+			{
+				if (id[i] == idN)
+				{
+					retorno = nCase[i];
+					flag = false;
+				}
+				i++;
+			}			
+			return retorno;	
+		}
+		
+		/**
+		 * coloca o valor de case inicial para o nó (usado para nós fonte (source))
+		 * @param valorCase valor do case que queremos colocar
+		 * @param idNo id do nó que deve ser colocado o valor do case inicial
+		 */
+		public void setCase(int valorCase, int idNo)
+		{
+			int i = 0;
+			boolean flag = true;
+			while ( (flag) && (i < id.length))
+			{
+				if (id[i] == idNo) // achou o o lugar certo para a atribuição
+				{
+					nCase[i] = valorCase;
+					flag = false;
+				}
+				i++;
+			}				
+		}
+		
+		/**
+		 * Método que imprime no console os valores dessa estrutura inteira
+		 * Método utilizado para testes da classe
+		 */
+		public void print()
+		{
+			for (int i = 0; i < id.length; i++)
+			{
+				System.out.println("\nID = " + id[i]);
+				System.out.println("Numero Request = " + nRequest[i]);
+				System.out.println("Numero Release = " + nRelease[i]);
+				System.out.println("Valor do case (valor = 0 -> não nó source): " + nCase[i]);
+			}
+		}		
+		
+		/* &&&&&&&&&&&&&&&&&&&&&&&&&& FIM DA CLASSE INTERNA &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& */
+		
+		
+
+	}
+
+}
+
+
+
