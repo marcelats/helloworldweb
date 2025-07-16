@@ -1,6 +1,6 @@
 package com.gerador;
 
-
+import java.io.InputStreamReader;
 import com.graph.Chegada;
 import com.graph.Graph;
 import com.graph.Node;
@@ -1453,8 +1453,7 @@ public class GeradorSIMPACK extends Gerador {
 	public void leGabarito(String gabarito){		
 		FileReader arq;
 		try {
-			arq = new FileReader(gabarito);
-			BufferedReader sai = new BufferedReader(arq);		
+			BufferedReader sai = new BufferedReader(new InputStreamReader(GeradorSMPL.class.getResourceAsStream(gabarito)));	
 			String linha = new String();
 			while ((linha = sai.readLine()) != null){
 				if (linha.indexOf("%") != 0){ // se n   o come   a com %, ent   o copia toda a linha	
