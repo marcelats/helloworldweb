@@ -1397,12 +1397,10 @@ public class GeradorSMPL extends Gerador {
 	 * ser executada.
 	 *
 	 */
-	public void leGabarito(InputStream gabarito){		
-		FileReader arq;
+	public void leGabarito(String gabarito){		
 		try {
-			arq = new FileReader(gabarito);
-			BufferedReader sai = new BufferedReader(new InputStreamReader(gabarito));		
-			String linha = new String();
+			BufferedReader sai = new BufferedReader(new InputStreamReader(GeradorSMPL.class.getResourceAsStream(gabarito)));			
+	
 			while ((linha = sai.readLine()) != null){
 				if (linha.indexOf("%") != 0){ // se n   o come   a com %, ent   o copia toda a linha	
 					buffer.delete(0,119);
