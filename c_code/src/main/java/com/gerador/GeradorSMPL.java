@@ -1,5 +1,6 @@
 package com.gerador;
-
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import com.graph.Chegada;
 import com.graph.Graph;
 import com.graph.Node;
