@@ -318,7 +318,7 @@ public class JanelaRedes {
 		{
 			gerador = new GeradorSMPL(graph);
 			gerador.criaArquivo();
-			gerador.leGabarito("gabaritos/GABARITO.DAT");											
+			gerador.leGabarito(getClass().getResourceAsStream("/com/gabaritos/GABARITO.DAT"));											
 		}
 		else if (lang.equals("ParSMPL"))
 		{
