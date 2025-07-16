@@ -53,7 +53,7 @@ services:
     build: ./c_code
     container_name: meu-java   
     ports:
-      - "8002:8000"
+      - "8002:8002"
     networks:
       - app-network
 

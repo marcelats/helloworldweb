@@ -46,7 +46,7 @@ public class JanelaRedes {
 	 * @param args
 	 */
 	public static void main(String[] args) {
- 		Javalin app = Javalin.create().start(8000);
+ 		Javalin app = Javalin.create().start(8002);
 
 		app.post("/processar", ctx -> {
             // 1. Recebe o parâmetro string (ex: nome do usuário)
