@@ -323,8 +323,6 @@ public class JanelaRedes {
 		{
 			gerador = new GeradorSMPL(graph);
 			gerador.criaArquivo();
-			InputStream is = GeradorSMPL.class.getResourceAsStream("/com/gabaritos/GABARITO.DAT");
-
 			gerador.leGabarito("/com/gabaritos/GABARITO.DAT");											
 		}
 		else if (lang.equals("ParSMPL"))
@@ -337,19 +335,19 @@ public class JanelaRedes {
 		{
 			gerador = new GeradorSMPLX(graph);
 			gerador.criaArquivo();
-			gerador.leGabarito("gabaritos/GABARITO_SMPLX.DAT");					
+			gerador.leGabarito("/com/gabaritos/GABARITO_SMPLX.DAT");					
 		}
 		else if (lang.equals("SIMPACK"))
 		{
 			gerador = new GeradorSIMPACK(graph);
 			gerador.criaArquivo();
-			gerador.leGabarito("gabaritos/GABARITO_SIMPACK.DAT");				
+			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK.DAT");				
 		}
 		else if ( lang.equals("SIMPACK2"))
 		{
 			gerador = new GeradorSIMPACK2(graph);
 			gerador.criaArquivo();
-			gerador.leGabarito("gabaritos/GABARITO_SIMPACK2.DAT");
+			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK2.DAT");
 		}	
 
             // 5. Grava em arquivo temporário
