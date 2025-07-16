@@ -333,7 +333,7 @@ public class JanelaRedes {
 			    .lines()
 			    .collect(Collectors.joining("\n"));
 
-			gerador.leGabarito(getClass().getResourceAsStream(conteudo));											
+			gerador.leGabarito(conteudo);											
 		}
 		else if (lang.equals("ParSMPL"))
 		{
