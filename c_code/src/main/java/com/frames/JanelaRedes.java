@@ -318,7 +318,6 @@ public class JanelaRedes {
 		
 		} 
 		Gerador gerador;
-		String codigoGerado;
 		if ( lang.equals("SMPL"))
 		{
 			gerador = new GeradorSMPL(graph);
