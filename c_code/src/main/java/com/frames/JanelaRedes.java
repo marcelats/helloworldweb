@@ -392,8 +392,8 @@ public class JanelaRedes {
 		
 		
 		
-	}
+	});
 	
-}
+}}
 
 	
