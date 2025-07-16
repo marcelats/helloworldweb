@@ -325,15 +325,7 @@ public class JanelaRedes {
 			gerador.criaArquivo();
 			InputStream is = GeradorSMPL.class.getResourceAsStream("/com/gabaritos/GABARITO.DAT");
 
-			if (is == null) {
-			    throw new FileNotFoundException("Arquivo não encontrado!");
-			}
-			
-			String conteudo = new BufferedReader(new InputStreamReader(is))
-			    .lines()
-			    .collect(Collectors.joining("\n"));
-
-			gerador.leGabarito(conteudo);											
+			gerador.leGabarito(is);											
 		}
 		else if (lang.equals("ParSMPL"))
 		{
