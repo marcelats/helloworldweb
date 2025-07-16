@@ -318,7 +318,7 @@ public class JanelaRedes {
 		
 		} 
 		Gerador gerador;
-		
+		String codigoGerado;
 		if ( lang.equals("SMPL"))
 		{
 			gerador = new GeradorSMPL(graph);
@@ -350,8 +350,27 @@ public class JanelaRedes {
 			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK2.DAT");
 		}	
 
-            // 5. Grava em arquivo temporário
-            String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
+			if(lang.equals("SIMPACK2")){
+				String codigoGerado = "untitled.cpp"; // ex: vindo de alguma lógica
+
+        // Caminho de origem
+        Path origem = Path.of(codigoGerado);
+
+        // Caminho de destino (UUID + extensão .py)
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        Path destino = Path.of("/tmp", uuid + ".cpp");
+
+        // Move (ou renomeia) o arquivo
+        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+
+        System.out.println("Arquivo movido para: " + destino.toString());
+
+            // 6. Envia o arquivo de volta como download
+            ctx.contentType("application/octet-stream");
+            ctx.header("Content-Disposition", "attachment; filename=\"code.cpp\"");
+            ctx.result(new FileInputStream(destino.toFile()));
+			}
+			else{String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
 
         // Caminho de origem
         Path origem = Path.of(codigoGerado);
@@ -368,8 +387,8 @@ public class JanelaRedes {
             // 6. Envia o arquivo de volta como download
             ctx.contentType("application/octet-stream");
             ctx.header("Content-Disposition", "attachment; filename=\"code.c\"");
-            ctx.result(new FileInputStream(destino.toFile()));
-        });
+            ctx.result(new FileInputStream(destino.toFile()));}
+           
 		
 		
 		
