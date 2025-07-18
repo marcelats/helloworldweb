@@ -442,17 +442,17 @@ public class JanelaRedes {
 
         // Caminho de destino (UUID + extensão .py)
         String uuid = UUID.randomUUID().toString().replace("-", "");
-        Path destino = Path.of("/tmp", uuid + ".txt");
+        Path destinoex = Path.of("/tmp", uuid + ".txt");
 
         // Move (ou renomeia) o arquivo
-        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+        Files.move(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
 
-        System.out.println("Arquivo movido para: " + destino.toString());
+        System.out.println("Arquivo movido para: " + destinoex.toString());
 
             // 6. Envia o arquivo de volta como download
             ctx.contentType("application/octet-stream");
             ctx.header("Content-Disposition", "attachment; filename=\"rel.txt\"");
-            ctx.result(new FileInputStream(destino.toFile()));}
+            ctx.result(new FileInputStream(destinoex.toFile()));}
 							
 							catch (IOException eio)
 							{
