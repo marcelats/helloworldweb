@@ -311,11 +311,6 @@ public class JanelaRedes {
     }
 	catch (Exception e){	
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(
-					null,
-					"Arquivo inv lido ou incompat vel!",
-					"ASDA - Erro na abertura do arquivo",
-					JOptionPane.ERROR_MESSAGE);
 			throw e;
 		
 		} 
@@ -413,10 +408,6 @@ public class JanelaRedes {
     Files.copy(arquivo, fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		if ( lang.equals("SMPL"))
 					{
-						gerador = new GeradorSMPL(graph);
-						gerador.criaArquivo();
-						gerador.leGabarito("gabaritos/GABARITO.DAT");	
-						
 						File fDest = new File("exec/smpl/modelo.c");
 						    if (fDest.exists())
 						    	fDest.delete();
@@ -443,7 +434,25 @@ public class JanelaRedes {
 						    		f2.delete();
 						    	
 						    	if (f.exists())
-						    		f.renameTo(f2 );							    
+						    		f.renameTo(f2 );
+								String relGerado = "rel.txt"; // ex: vindo de alguma lógica
+
+        // Caminho de origem
+        Path origem = Path.of(relGerado);
+
+        // Caminho de destino (UUID + extensão .py)
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        Path destino = Path.of("/tmp", uuid + ".txt");
+
+        // Move (ou renomeia) o arquivo
+        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+
+        System.out.println("Arquivo movido para: " + destino.toString());
+
+            // 6. Envia o arquivo de volta como download
+            ctx.contentType("application/octet-stream");
+            ctx.header("Content-Disposition", "attachment; filename=\"rel.txt\"");
+            ctx.result(new FileInputStream(destino.toFile()));}
 							}
 							catch (IOException eio)
 							{
