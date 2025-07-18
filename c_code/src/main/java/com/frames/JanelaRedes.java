@@ -456,17 +456,21 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
 						    	
 						    	if (f.exists())
 						    		f.renameTo(f2 );
-								String relGerado = "rel.txt"; // ex: vindo de alguma lógica
+								String relGerado = "rel.txt";  // arquivo gerado
+Path origem = Path.of(System.getProperty("user.dir"), relGerado);
 
-        // Caminho de origem
-        Path origem = Path.of(relGerado);
+if (!Files.exists(origem)) {
+    throw new FileNotFoundException("Arquivo de relatório não encontrado: " + origem);
+}
 
-        // Caminho de destino (UUID + extensão .py)
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        Path destinoex = Path.of("/tmp", uuid + ".txt");
+String uuid = UUID.randomUUID().toString().replace("-", "");
+Path destinoDir = Path.of("/tmp");
+Files.createDirectories(destinoDir);
+Path destinoex = destinoDir.resolve(uuid + ".txt");
 
-        // Move (ou renomeia) o arquivo
-        Files.move(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
+Files.move(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
+System.out.println("Relatório movido para: " + destinoex);
+
 
         System.out.println("Arquivo movido para: " + destinoex.toString());
 
