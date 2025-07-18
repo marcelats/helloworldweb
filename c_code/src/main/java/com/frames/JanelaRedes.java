@@ -468,7 +468,7 @@ Path destinoDir = Path.of("/tmp");
 Files.createDirectories(destinoDir);
 Path destinoex = destinoDir.resolve(uuid + ".out");
 
-Files.move(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
+Files.copy(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
 System.out.println("Relatório movido para: " + destinoex);
 
 
