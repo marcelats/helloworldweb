@@ -404,7 +404,7 @@ public class JanelaRedes {
                 return;
             }
 		String nomeArquivo = arquivo.filename(); // nome original do arquivo
-						    Path destino = Paths.get("untitled.c", nomeArquivo); // ajuste esse caminho
+						    Path destino = Paths.get("untitled.c"); // ajuste esse caminho
 						
 						    try (InputStream input = arquivo.content()) {
 						        Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
