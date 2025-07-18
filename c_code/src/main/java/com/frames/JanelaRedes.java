@@ -422,13 +422,14 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
         }
 
 							String[] comandoCompilar = {
-            "cc", "-o", "/app/tmp/untitled",
-            "/app/untitled.c",
-            "/app/tmp/smpl.c",
-            "/app/tmp/rand.c",
-            "/app/tmp/bmeans.c",
-            "-lm"
-        };
+    "cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
+    "-o", "/app/tmp/untitled",
+    "/app/untitled.c",
+    "/app/tmp/smpl.c",
+    "/app/tmp/rand.c",
+    "/app/tmp/bmeans.c",
+    "-lm"
+};
 
 							try
 							{
