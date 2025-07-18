@@ -412,30 +412,38 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 					{
-						JanelaRedes.extrairParaTmp("com/exec/smpl/smpl.c", "smpl.c");
-JanelaRedes.extrairParaTmp("com/exec/smpl/rand.c", "rand.c");
-JanelaRedes.extrairParaTmp("com/exec/smpl/bmeans.c", "bmeans.c");
+						JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
+JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
+JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
+						File fsrc = new File("/app/untitled.c");
+        if (!fsrc.exists()) {
+            throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
+        }
 
-							String cmd = "cc -o /app/tmp/untitled /app/untitled.c /app/tmp/smpl.c /app/tmp/rand.c /app/tmp/bmeans.c -lm";
+							String cmd = "cc", "-o", "/app/tmp/untitled",
+            "/app/untitled.c",
+            "/app/tmp/smpl.c",
+            "/app/tmp/rand.c",
+            "/app/tmp/bmeans.c",
+            "-lm";
 
 							try
 							{
 								// Aqui  executada a compilao
 								// Observao: sempre compila-se tambm os fontes do SMPL
 								// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
-							    Process p = Runtime.getRuntime().exec(cmd);		
-								BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-String linha;
-while ((linha = err.readLine()) != null) {
-    System.err.println("[gcc stderr] " + linha);
-}
+							    Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
+        printSaida("gcc", p.getInputStream());
+        p.waitFor();
 
-								p.waitFor();
-						    	//  terminada a compilao
-								// manda executar o programa
-						    	Process p2 = Runtime.getRuntime().exec("/app/tmp/untitled");
+        File bin = new File("/app/tmp/untitled");
+        if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
+        bin.setExecutable(true);
 
-						    	p2.waitFor();
+        // Executar binário
+        Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
+        printSaida("exec", p2.getInputStream());
+        p2.waitFor();
 						    	// mover o relatorio para a pasta de relatorios
 						    	File f = new File("untitled.out");
 						    	File f2 = new File("relatorio/untitled.out");
