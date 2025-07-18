@@ -466,6 +466,33 @@ public class JanelaRedes {
 					}
 
 	});
-}}
+}
+
+	private static void copiarArquivos(File f1, File f2)
+	{
+
+		try {
+			String temp;
+				BufferedReader ori = new BufferedReader(new FileReader(f1));
+				FileWriter dest = new FileWriter(f2,true);
+				while ((temp = ori.readLine()) != null)
+				{
+					temp = temp + "\n";
+					dest.write(temp);
+				}
+				ori.close();
+				dest.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+	}
+}
 
 	
