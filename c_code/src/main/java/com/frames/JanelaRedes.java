@@ -83,6 +83,7 @@ public class JanelaRedes {
 		tipoModelo = "", warmUp = "", tWarmup = "";
         try (BufferedReader br = new BufferedReader(new StringReader(entradaTexto))) {
             String linha;
+		int count = 0;
             while ((linha = br.readLine()) != null) {
                 linha = linha.trim();
 				if (linha.startsWith("digraph")){
@@ -213,6 +214,7 @@ public class JanelaRedes {
 				node.setSequenciaFonte(sequenciaFonte);
 				node.setDesvioPadrao(desvioPadrao);
 				node.setDesvioPadraoFonte(desvioPadraoFonte);
+				node.setNomeCentroServico("CS" + String.valueOf(count++));
 			}
 
 		}
