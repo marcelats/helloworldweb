@@ -394,7 +394,75 @@ public class JanelaRedes {
 		
 		
 	});
-	
+	app.post("/executar", ctx -> {
+            // 1. Recebe o parâmetro string (ex: nome do usuário)
+            String lang = ctx.formParam("lang");
+            if (lang == null) {
+                ctx.status(400).result("Parâmetro 'lang' é obrigatório");
+                return;
+            }
+
+            // 2. Recebe o arquivo
+            UploadedFile arquivo = ctx.uploadedFile("arquivo");
+            if (arquivo == null) {
+                ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
+                return;
+            }
+		
+    File fsrc = new File("/tmp/" + "untitled.c");
+    Files.copy(arquivo, fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		if ( lang.equals("SMPL"))
+					{
+						gerador = new GeradorSMPL(graph);
+						gerador.criaArquivo();
+						gerador.leGabarito("gabaritos/GABARITO.DAT");	
+						
+						File fDest = new File("exec/smpl/modelo.c");
+						    if (fDest.exists())
+						    	fDest.delete();
+						    JanelaRedes.copiarArquivos(fsrc,fDest);
+							String cmd = "cc -o exec/tmp/untitled" + 
+								" exec/smpl/modelo.c " +
+								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
+							try
+							{
+								// Aqui  executada a compilao
+								// Observao: sempre compila-se tambm os fontes do SMPL
+								// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
+							    Process p = Runtime.getRuntime().exec(cmd);			    
+								p.waitFor();
+						    	//  terminada a compilao
+								// manda executar o programa
+						    	Process p2 = Runtime.getRuntime().exec(
+						    			"./exec/tmp/untitled");
+						    	p2.waitFor();
+						    	// mover o relatorio para a pasta de relatorios
+						    	File f = new File("untitled.out");
+						    	File f2 = new File("relatorio/untitled.out");
+						    	if (f2.exists())
+						    		f2.delete();
+						    	
+						    	if (f.exists())
+						    		f.renameTo(f2 );							    
+							}
+							catch (IOException eio)
+							{
+								eio.printStackTrace();	
+								JOptionPane.showMessageDialog(
+										null,
+										"Problemas ao gerar executvel\n" +
+										"certifique-se de estar no Linux e de ter um compilador C (cc)",
+										"ASDA - ERRO",
+										JOptionPane.ERROR_MESSAGE );
+							}
+							catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+					}
+
+
+	});
 }}
 
 	
