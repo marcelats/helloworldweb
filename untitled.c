@@ -8,7 +8,7 @@ main()
  /* definicoes */
  float Te = 100000;
  int Event = 1, Customer = 1, Aleatorio;
- float Ta1 = 0.0833, , Ts1 = 0.04, Ts2 = 0.05;
+ float Ta1 = 0.0833, Ts1 = 0.04, Ts2 = 0.05;
  int i = 0;
 
  char flag_reset = 0;
