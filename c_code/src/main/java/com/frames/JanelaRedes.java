@@ -404,16 +404,16 @@ public class JanelaRedes {
                 return;
             }
 		
-    File fsrc = new File("/tmp/" + "untitled.c");
-    Files.copy(arquivo.content(), fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    File fsrc = File.createTempFile("untitled", ".c");
+
 		if ( lang.equals("SMPL"))
 					{
-						File fDest = new File(getClass().getResourceAsStream("/exec/smpl/modelo.c"));
+						
 						    if (fDest.exists())
 						    	fDest.delete();
 						    JanelaRedes.copiarArquivos(fsrc,fDest);
 							String cmd = "cc -o exec/tmp/untitled" + 
-								" exec/smpl/modelo.c " +
+								" untitled.c " +
 								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
 							try
 							{
