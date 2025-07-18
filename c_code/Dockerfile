@@ -9,7 +9,7 @@ RUN mvn clean package
 FROM openjdk:11-jre-slim
 
 WORKDIR /app
-
+RUN apt-get update && apt-get install -y build-essential && apt-get clean
 # Copia os arquivos fonte
 COPY --from=builder /app/target/meu-projeto-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
 
