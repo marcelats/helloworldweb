@@ -403,15 +403,15 @@ public class JanelaRedes {
                 ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
                 return;
             }
-		
-    File fsrc = File.createTempFile("untitled", ".c");
+		String nomeArquivo = arquivo.filename(); // nome original do arquivo
+						    Path destino = Paths.get("untitled.c", nomeArquivo); // ajuste esse caminho
+						
+						    try (InputStream input = arquivo.content()) {
+						        Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
+						    }
 
 		if ( lang.equals("SMPL"))
 					{
-						
-						    if (fDest.exists())
-						    	fDest.delete();
-						    JanelaRedes.copiarArquivos(fsrc,fDest);
 							String cmd = "cc -o exec/tmp/untitled" + 
 								" untitled.c " +
 								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
