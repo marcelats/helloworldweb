@@ -411,15 +411,7 @@ public class JanelaRedes {
 						    }
 
 		if ( lang.equals("SMPL"))
-					{System.out.println("Diretório atual: " + System.getProperty("user.dir"));
-					 File fsrc = new File("untitled.c");
-System.out.println("Path absoluto do .c: " + fsrc.getAbsolutePath());
-System.out.println("Existe? " + fsrc.exists());
-File fexe = new File("untitled");
-System.out.println("Path absoluto do exec: " + fexe.getAbsolutePath());
-System.out.println("Existe? " + fexe.exists());
-
-
+					{
 							String cmd = "cc -o untitled" + 
 								" untitled.c " +
 								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
@@ -428,12 +420,18 @@ System.out.println("Existe? " + fexe.exists());
 								// Aqui  executada a compilao
 								// Observao: sempre compila-se tambm os fontes do SMPL
 								// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
-							    Process p = Runtime.getRuntime().exec(cmd);			    
+							    Process p = Runtime.getRuntime().exec(cmd);		
+								BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+String linha;
+while ((linha = err.readLine()) != null) {
+    System.err.println("[gcc stderr] " + linha);
+}
+
 								p.waitFor();
 						    	//  terminada a compilao
 								// manda executar o programa
 						    	Process p2 = Runtime.getRuntime().exec(
-						    			"untitled");
+						    			"./untitled");
 						    	p2.waitFor();
 						    	// mover o relatorio para a pasta de relatorios
 						    	File f = new File("untitled.out");
