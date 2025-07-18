@@ -412,9 +412,12 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 					{
-							String cmd = "cc -o untitled" + 
-								" untitled.c " +
-								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
+						extrairParaTmp("com/exec/smpl/smpl.c", "smpl.c");
+extrairParaTmp("com/exec/smpl/rand.c", "rand.c");
+extrairParaTmp("com/exec/smpl/bmeans.c", "bmeans.c");
+
+							String cmd = "cc -o /app/tmp/untitled /app/untitled.c /app/tmp/smpl.c /app/tmp/rand.c /app/tmp/bmeans.c -lm";
+
 							try
 							{
 								// Aqui  executada a compilao
@@ -430,8 +433,8 @@ while ((linha = err.readLine()) != null) {
 								p.waitFor();
 						    	//  terminada a compilao
 								// manda executar o programa
-						    	Process p2 = Runtime.getRuntime().exec(
-						    			"./untitled");
+						    	Process p2 = Runtime.getRuntime().exec("/app/tmp/untitled");
+
 						    	p2.waitFor();
 						    	// mover o relatorio para a pasta de relatorios
 						    	File f = new File("untitled.out");
@@ -499,6 +502,17 @@ while ((linha = err.readLine()) != null) {
 
 		
 	}
+	public File extrairParaTmp(String caminhoInterno, String nomeArquivo) throws IOException {
+    InputStream in = getClass().getClassLoader().getResourceAsStream(caminhoInterno);
+    if (in == null) {
+        throw new FileNotFoundException("Arquivo não encontrado no classpath: " + caminhoInterno);
+    }
+    File destino = new File("/app/tmp/" + nomeArquivo);
+    destino.getParentFile().mkdirs(); // cria diretório se não existir
+    Files.copy(in, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    return destino;
+}
+
 }
 
 	
