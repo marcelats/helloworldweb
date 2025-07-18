@@ -456,7 +456,7 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
 						    	
 						    	if (f.exists())
 						    		f.renameTo(f2 );
-								String relGerado = "rel.txt";  // arquivo gerado
+								String relGerado = "untitled.out";  // arquivo gerado
 Path origem = Path.of(System.getProperty("user.dir"), relGerado);
 
 if (!Files.exists(origem)) {
@@ -466,7 +466,7 @@ if (!Files.exists(origem)) {
 String uuid = UUID.randomUUID().toString().replace("-", "");
 Path destinoDir = Path.of("/tmp");
 Files.createDirectories(destinoDir);
-Path destinoex = destinoDir.resolve(uuid + ".txt");
+Path destinoex = destinoDir.resolve(uuid + ".out");
 
 Files.move(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
 System.out.println("Relatório movido para: " + destinoex);
@@ -476,7 +476,7 @@ System.out.println("Relatório movido para: " + destinoex);
 
             // 6. Envia o arquivo de volta como download
             ctx.contentType("application/octet-stream");
-            ctx.header("Content-Disposition", "attachment; filename=\"rel.txt\"");
+            ctx.header("Content-Disposition", "attachment; filename=\"untitled.out\"");
             ctx.result(new FileInputStream(destinoex.toFile()));}
 							
 							catch (IOException eio)
