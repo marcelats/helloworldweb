@@ -411,7 +411,8 @@ public class JanelaRedes {
 						    }
 
 		if ( lang.equals("SMPL"))
-					{
+					{System.out.println("Diretório atual: " + System.getProperty("user.dir"));
+
 							String cmd = "cc -o untitled" + 
 								" untitled.c " +
 								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
