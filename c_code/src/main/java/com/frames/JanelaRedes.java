@@ -463,7 +463,7 @@ public class JanelaRedes {
 								e1.printStackTrace();
 							}
 					
-
+					}
 
 	});
 }}
