@@ -1,0 +1,44 @@
+/* ----------------------------------------------------------------------- 
+Código gerado com o ASDA - Ambiente de Simulação Distribuída Automático
+--------------------------------------------------------------------------*/
+#include "queuing.h"
+
+main()
+{
+ /* definicoes */
+  Token Customer(1);
+  int Aleatorio;
+  
+%0define_tempo_num_max
+%1define_variaveis
+
+ /* prepara o sistema de simulacao e da nome ao modelo */
+%2define_smpl
+
+
+ /* cria e da nome as facilidades */
+%3define_server
+
+ /* escalona a chegada do primeiro cliente */
+%4escalona_primeiro_evento
+
+%5gera_loop
+ {
+%Gwarm_up
+%6gera_next_event(equivale_ao_cause_do_smpl)
+%7gera_switch
+   {
+%8gera_eventos
+   }
+ }
+
+
+/* gera o relatorio da simulacao */
+%9gera_relatorio_padrao
+%Cgera_relatorio_estatisticas_max_min
+%Dgera_relatorio_estatisticas_fila_vazia
+%EfechaArquivo_relatorio_simulacao
+%Zfinaliza_simulacao
+ return 0;
+}
+/* ----------------------------------------------------------------------- */

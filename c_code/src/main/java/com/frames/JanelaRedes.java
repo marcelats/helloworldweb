@@ -318,38 +318,38 @@ public class JanelaRedes {
 		
 		} 
 		Gerador gerador;
-		if ( lang.equals("SMPL"))
+		if ( lang.equals("C SMPL"))
 		{
 			gerador = new GeradorSMPL(graph);
 			gerador.criaArquivo();
 			gerador.leGabarito("/com/gabaritos/GABARITO.DAT");											
 		}
-		else if (lang.equals("ParSMPL"))
+		else if (lang.equals("C ParSMPL"))
 		{
 			gerador = new GeradorParSMPL(graph);
 			gerador.criaArquivo();
 			gerador.leGabarito(null); // n o precisa passar gabarito, o gerador   quem controla
 		}
-		else if ( lang.equals("SMPLX"))
+		else if ( lang.equals("C SMPLX"))
 		{
 			gerador = new GeradorSMPLX(graph);
 			gerador.criaArquivo();
 			gerador.leGabarito("/com/gabaritos/GABARITO_SMPLX.DAT");					
 		}
-		else if (lang.equals("SIMPACK"))
+		else if (lang.equals("C SIMPACK"))
 		{
 			gerador = new GeradorSIMPACK(graph);
 			gerador.criaArquivo();
 			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK.DAT");				
 		}
-		else if ( lang.equals("SIMPACK2"))
+		else if ( lang.equals("C SIMPACK2"))
 		{
 			gerador = new GeradorSIMPACK2(graph);
 			gerador.criaArquivo();
 			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK2.DAT");
 		}	
 
-			if(lang.equals("SIMPACK2")){
+			if(lang.equals("C SIMPACK2")){
 				String codigoGerado = "untitled.cpp"; // ex: vindo de alguma lógica
 
         // Caminho de origem
