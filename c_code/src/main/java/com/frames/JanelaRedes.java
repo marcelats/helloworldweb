@@ -420,12 +420,14 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
             throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
         }
 
-							String cmd = "cc", "-o", "/app/tmp/untitled",
+							String[] comandoCompilar = {
+            "cc", "-o", "/app/tmp/untitled",
             "/app/untitled.c",
             "/app/tmp/smpl.c",
             "/app/tmp/rand.c",
             "/app/tmp/bmeans.c",
-            "-lm";
+            "-lm"
+        };
 
 							try
 							{
