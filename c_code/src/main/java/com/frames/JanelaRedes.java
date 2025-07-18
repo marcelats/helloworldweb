@@ -503,7 +503,7 @@ while ((linha = err.readLine()) != null) {
 		
 	}
 	public static File extrairParaTmp(String caminhoInterno, String nomeArquivo) throws IOException {
-    InputStream in = getClass().getClassLoader().getResourceAsStream(caminhoInterno);
+    InputStream in = JanelaRedes.class.getClassLoader().getResourceAsStream(caminhoInterno);
     if (in == null) {
         throw new FileNotFoundException("Arquivo não encontrado no classpath: " + caminhoInterno);
     }
