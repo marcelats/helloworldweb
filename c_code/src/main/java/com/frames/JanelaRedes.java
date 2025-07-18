@@ -453,7 +453,7 @@ public class JanelaRedes {
             ctx.contentType("application/octet-stream");
             ctx.header("Content-Disposition", "attachment; filename=\"rel.txt\"");
             ctx.result(new FileInputStream(destino.toFile()));}
-							}
+							
 							catch (IOException eio)
 							{
 								eio.printStackTrace();	
