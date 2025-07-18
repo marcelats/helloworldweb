@@ -413,6 +413,7 @@ public class JanelaRedes {
 		if ( lang.equals("SMPL"))
 					{
 						JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
+						JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
 JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
 						File fsrc = new File("/app/untitled.c");
