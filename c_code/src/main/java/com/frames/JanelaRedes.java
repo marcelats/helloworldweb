@@ -405,7 +405,7 @@ public class JanelaRedes {
             }
 		
     File fsrc = new File("/tmp/" + "untitled.c");
-    Files.copy(arquivo, fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    Files.copy(arquivo.content(), fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		if ( lang.equals("SMPL"))
 					{
 						File fDest = new File("exec/smpl/modelo.c");
