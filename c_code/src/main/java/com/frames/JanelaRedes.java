@@ -448,12 +448,6 @@ public class JanelaRedes {
 							catch (IOException eio)
 							{
 								eio.printStackTrace();	
-								JOptionPane.showMessageDialog(
-										null,
-										"Problemas ao gerar executvel\n" +
-										"certifique-se de estar no Linux e de ter um compilador C (cc)",
-										"ASDA - ERRO",
-										JOptionPane.ERROR_MESSAGE );
 							}
 							catch (InterruptedException e1) {
 								// TODO Auto-generated catch block
