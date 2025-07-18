@@ -412,6 +412,13 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 					{System.out.println("Diretório atual: " + System.getProperty("user.dir"));
+					 File fsrc = new File("untitled.c");
+System.out.println("Path absoluto do .c: " + fsrc.getAbsolutePath());
+System.out.println("Existe? " + fsrc.exists());
+File fexe = new File("untitled");
+System.out.println("Path absoluto do exec: " + fexe.getAbsolutePath());
+System.out.println("Existe? " + fexe.exists());
+
 
 							String cmd = "cc -o untitled" + 
 								" untitled.c " +
