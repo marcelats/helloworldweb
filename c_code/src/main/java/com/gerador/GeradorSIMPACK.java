@@ -278,19 +278,22 @@ public class GeradorSIMPACK extends Gerador {
 				buffer.append(String.valueOf(graph.getNode(i).getIdNo()));
 				buffer.append(" = ");
 				buffer.append(graph.getNode(i).getMediaFonte());
+				buffer.append(", ");
 			}	
 		}				
 			
 		for (int i = 0; i< graph.getSize(); i++)
 		{	// Define a taxa de servi   o de todos centros de servi   os
 			if (graph.getNode(i).getTipoNo() == 2){
-				buffer.append(", ");
 				buffer.append(nomeB);
 				buffer.append(String.valueOf(graph.getNode(i).getIdNo()));
 				buffer.append(" = ");
 				buffer.append(graph.getNode(i).getMedia());
+				buffer.append(", ");
 			}
 		}
+		int temp = buffer.lastIndexOf(", ");
+		buffer.delete(temp, buffer.length());
 		buffer.append(";\n");
 		buffer.append(" int i = 0;\n");
 		gravaArquivo(buffer);
