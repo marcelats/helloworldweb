@@ -412,7 +412,7 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 					{
-							String cmd = "cc -o exec/tmp/untitled" + 
+							String cmd = "cc -o untitled" + 
 								" untitled.c " +
 								" exec/smpl/smpl.c exec/smpl/rand.c exec/smpl/bmeans.c -lm";
 							try
@@ -425,7 +425,7 @@ public class JanelaRedes {
 						    	//  terminada a compilao
 								// manda executar o programa
 						    	Process p2 = Runtime.getRuntime().exec(
-						    			"./exec/tmp/untitled");
+						    			"untitled");
 						    	p2.waitFor();
 						    	// mover o relatorio para a pasta de relatorios
 						    	File f = new File("untitled.out");
