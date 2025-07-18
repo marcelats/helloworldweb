@@ -450,12 +450,6 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
         p2.waitFor();
 						    	// mover o relatorio para a pasta de relatorios
 						    	File f = new File("untitled.out");
-						    	File f2 = new File("relatorio/untitled.out");
-						    	if (f2.exists())
-						    		f2.delete();
-						    	
-						    	if (f.exists())
-						    		f.renameTo(f2 );
 								String relGerado = "untitled.out";  // arquivo gerado
 Path origem = Path.of(System.getProperty("user.dir"), relGerado);
 
