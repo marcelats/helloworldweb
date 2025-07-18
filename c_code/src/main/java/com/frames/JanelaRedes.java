@@ -522,6 +522,14 @@ JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
     Files.copy(in, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
     return destino;
 }
+	private static void printSaida(String prefixo, InputStream inputStream) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                System.out.println("[" + prefixo + "] " + linha);
+            }
+        }
+    }
 
 }
 
