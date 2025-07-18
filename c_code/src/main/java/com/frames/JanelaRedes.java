@@ -408,7 +408,7 @@ public class JanelaRedes {
     Files.copy(arquivo.content(), fsrc.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		if ( lang.equals("SMPL"))
 					{
-						File fDest = new File("exec/smpl/modelo.c");
+						File fDest = new File(getClass().getResourceAsStream("/exec/smpl/modelo.c"));
 						    if (fDest.exists())
 						    	fDest.delete();
 						    JanelaRedes.copiarArquivos(fsrc,fDest);
