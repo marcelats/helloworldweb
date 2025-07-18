@@ -412,9 +412,9 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 					{
-						extrairParaTmp("com/exec/smpl/smpl.c", "smpl.c");
-extrairParaTmp("com/exec/smpl/rand.c", "rand.c");
-extrairParaTmp("com/exec/smpl/bmeans.c", "bmeans.c");
+						JanelaRedes.extrairParaTmp("com/exec/smpl/smpl.c", "smpl.c");
+JanelaRedes.extrairParaTmp("com/exec/smpl/rand.c", "rand.c");
+JanelaRedes.extrairParaTmp("com/exec/smpl/bmeans.c", "bmeans.c");
 
 							String cmd = "cc -o /app/tmp/untitled /app/untitled.c /app/tmp/smpl.c /app/tmp/rand.c /app/tmp/bmeans.c -lm";
 
@@ -502,7 +502,7 @@ while ((linha = err.readLine()) != null) {
 
 		
 	}
-	public File extrairParaTmp(String caminhoInterno, String nomeArquivo) throws IOException {
+	public static File extrairParaTmp(String caminhoInterno, String nomeArquivo) throws IOException {
     InputStream in = getClass().getClassLoader().getResourceAsStream(caminhoInterno);
     if (in == null) {
         throw new FileNotFoundException("Arquivo não encontrado no classpath: " + caminhoInterno);
