@@ -420,7 +420,7 @@ public class JanelaRedes {
 		if (!fsrc.exists()) {
 			throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
 		}
-		String[] comandoCompilar;
+		String[] comandoCompilar = new String[0]; 
 		if ( lang.equals("C SMPL"))
 		{
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
