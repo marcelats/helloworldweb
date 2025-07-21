@@ -435,57 +435,57 @@ public class JanelaRedes {
     				"/app/tmp/bmeans.c",
     				"-lm"
 			};
+		}
+		else if(lang.equals("C SMPLX"))
+		{
+			JanelaRedes.extrairParaTmp("exec/smpl/smplx.c", "smplx.c");
+			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
+			JanelaRedes.extrairParaTmp("exec/smpl/randpar.c", "randpar.c");
+			String[] comandoCompilar = {
+				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
+				"-o", "/app/tmp/untitled",
+				"/app/untitled.c",
+				"/app/tmp/smplx.c",
+				"/app/tmp/randpar.c",
+				"-lm"
+			};
+		}
 
-			try
+		try
+		{
+			// Aqui  executada a compilao
+			// Observao: sempre compila-se tambm os fontes do SMPL
+			// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
+			Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
+			printSaida("gcc", p.getInputStream());
+			p.waitFor();
+
+			File bin = new File("/app/tmp/untitled");
+			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
+			bin.setExecutable(true);
+
+			// Executar binário
+			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
+			printSaida("exec", p2.getInputStream());
+			p2.waitFor();
+			String uuid = UUID.randomUUID().toString().replace("-", "");
+			Files.move(Path.of("untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
+			// mover o relatorio para a pasta de relatorios
+
+			// 6. Envia o arquivo de volta como download
+			ctx.contentType("application/octet-stream");
+			ctx.header("Content-Disposition", "attachment; filename=\"rel.out\"");
+			ctx.result(new FileInputStream(Path.of("/tmp", uuid + ".out").toFile()));}
+						
+			catch (IOException eio)
 			{
-				// Aqui  executada a compilao
-				// Observao: sempre compila-se tambm os fontes do SMPL
-				// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
-				Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
-        			printSaida("gcc", p.getInputStream());
-        			p.waitFor();
-
-        			File bin = new File("/app/tmp/untitled");
-        			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
-       	 			bin.setExecutable(true);
-
-        			// Executar binário
-        			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
-        			printSaida("exec", p2.getInputStream());
-        			p2.waitFor();
-        			String uuid = UUID.randomUUID().toString().replace("-", "");
-        			Files.move(Path.of("untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
-				// mover o relatorio para a pasta de relatorios
-
-				// 6. Envia o arquivo de volta como download
-				ctx.contentType("application/octet-stream");
-				ctx.header("Content-Disposition", "attachment; filename=\"rel.out\"");
-				ctx.result(new FileInputStream(Path.of("/tmp", uuid + ".out").toFile()));}
-							
-				catch (IOException eio)
-				{
-					eio.printStackTrace();	
-				}
-				catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}		
+				eio.printStackTrace();	
 			}
-			else if(lang.equals("C SMPLX"))
-			{
-				JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
-				JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
-				JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
-				JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
-				String[] comandoCompilar = {
-	    				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
-	   	 			"-o", "/app/tmp/untitled",
-	    				"/app/untitled.c",
-	    				"/app/tmp/smplx.c",
-	    				"/app/tmp/randpar.c",
-	    				"-lm"
-				};
-			}
+			catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}		
+			
 		});
 	}
 
