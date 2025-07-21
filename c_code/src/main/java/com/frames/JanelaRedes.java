@@ -403,15 +403,17 @@ public class JanelaRedes {
                 ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
                 return;
             }
-		String nomeArquivo = arquivo.filename(); // nome original do arquivo
-		Path destino = Paths.get("untitled.c"); // ajuste esse caminho
-						
-		try (InputStream input = arquivo.content()) {
-			Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
+		String entradaTexto;
+		try (InputStream is = arquivo.content()) {
+			entradaTexto = new String(is.readAllBytes());
 		}
 
 		if ( lang.equals("SMPL"))
 		{
+			File f = new File("rel.out");        
+			if (f.exists()) 
+			f.delete();
+			
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
@@ -448,30 +450,14 @@ public class JanelaRedes {
         			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
         			printSaida("exec", p2.getInputStream());
         			p2.waitFor();
+        			String uuid = UUID.randomUUID().toString().replace("-", "");
+        			Files.move(Path.of("rel.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
 				// mover o relatorio para a pasta de relatorios
-				File f = new File("untitled.out");
-				String relGerado = "untitled.out";  // arquivo gerado
-				Path origem = Path.of(System.getProperty("user.dir"), relGerado);
-
-				if (!Files.exists(origem)) {
-    					throw new FileNotFoundException("Arquivo de relatório não encontrado: " + origem);
-				}
-
-				String uuid = UUID.randomUUID().toString().replace("-", "");
-				Path destinoDir = Path.of("/tmp");
-				Files.createDirectories(destinoDir);
-				Path destinoex = destinoDir.resolve(uuid + ".out");
-
-				Files.copy(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("Relatório movido para: " + destinoex);
-
-
-        			System.out.println("Arquivo movido para: " + destinoex.toString());
 
 				// 6. Envia o arquivo de volta como download
 				ctx.contentType("application/octet-stream");
-				ctx.header("Content-Disposition", "attachment; filename=\"untitled.out\"");
-				ctx.result(new FileInputStream(destinoex.toFile()));}
+				ctx.header("Content-Disposition", "attachment; filename=\"rel.out\"");
+				ctx.result(new FileInputStream(Path.of("/tmp", uuid + ".out").toFile()));}
 							
 				catch (IOException eio)
 				{
