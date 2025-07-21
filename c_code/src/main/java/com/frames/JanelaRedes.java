@@ -420,13 +420,14 @@ public class JanelaRedes {
 		if (!fsrc.exists()) {
 			throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
 		}
+		String[] comandoCompilar;
 		if ( lang.equals("C SMPL"))
 		{
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
-			String[] comandoCompilar = {
+			comandoCompilar = {
     				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
    	 			"-o", "/app/tmp/untitled",
     				"/app/untitled.c",
@@ -441,7 +442,7 @@ public class JanelaRedes {
 			JanelaRedes.extrairParaTmp("exec/smpl/smplx.c", "smplx.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smpl/randpar.c", "randpar.c");
-			String[] comandoCompilar = {
+			comandoCompilar = {
 				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
 				"-o", "/app/tmp/untitled",
 				"/app/untitled.c",
