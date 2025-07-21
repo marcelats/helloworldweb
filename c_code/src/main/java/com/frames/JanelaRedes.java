@@ -407,29 +407,25 @@ public class JanelaRedes {
 		try (InputStream is = arquivo.content()) {
 			entradaTexto = new String(is.readAllBytes());
 		}
-
-		if ( lang.equals("SMPL"))
-		{
-			File f = new File("untitled.out");        
+		File f = new File("untitled.out");        
 			if (f.exists()) 
 			f.delete();
-			
+		JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
+		File fsrc = new File("/app/untitled.c");
+		String originalName = arquivo.filename(); // Ex: untitled.c
+		String extensao = originalName.contains(".") ? originalName.substring(originalName.lastIndexOf(".")) : "";
+		try (InputStream in = arquivo.content(); FileOutputStream out = new FileOutputStream(fsrc)) {
+		    in.transferTo(out);
+		}
+		if (!fsrc.exists()) {
+			throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
+		}
+		if ( lang.equals("C SMPL"))
+		{
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
-			JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
-			File fsrc = new File("/app/untitled.c");
-			String originalName = arquivo.filename(); // Ex: untitled.c
-		        String extensao = originalName.contains(".") ? originalName.substring(originalName.lastIndexOf(".")) : "";
-		        // Copia o conteúdo do upload para o arquivo
-		        try (InputStream in = arquivo.content(); FileOutputStream out = new FileOutputStream(fsrc)) {
-		            in.transferTo(out);
-		        }
-       			if (!fsrc.exists()) {
-            			throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
-        		}
-
 			String[] comandoCompilar = {
     				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
    	 			"-o", "/app/tmp/untitled",
@@ -474,6 +470,21 @@ public class JanelaRedes {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}		
+			}
+			else if(lang.equals("C SMPLX"))
+			{
+				JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
+				JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
+				JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
+				JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
+				String[] comandoCompilar = {
+	    				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
+	   	 			"-o", "/app/tmp/untitled",
+	    				"/app/untitled.c",
+	    				"/app/tmp/smplx.c",
+	    				"/app/tmp/randpar.c",
+	    				"-lm"
+				};
 			}
 		});
 	}
