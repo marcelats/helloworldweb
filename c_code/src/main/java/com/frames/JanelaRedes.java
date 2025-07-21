@@ -418,7 +418,7 @@ public class JanelaRedes {
 			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
 			JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
-			JanelaRedes.extrairParaTmp("exec/smpl/untitled.c", "untitled.c");
+			JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
 			File fsrc = new File("/app/untitled.c");
 			String originalName = arquivo.filename(); // Ex: untitled.c
 		        String extensao = originalName.contains(".") ? originalName.substring(originalName.lastIndexOf(".")) : "";
