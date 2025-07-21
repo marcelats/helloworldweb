@@ -452,16 +452,15 @@ public class JanelaRedes {
 		}
 		else if(lang.equals("C SMPLX"))
 		{
-			JanelaRedes.extrairParaTmp("exec/smpl/smplx.c", "smplx.c");
-			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
-			JanelaRedes.extrairParaTmp("exec/smpl/randpar.c", "randpar.c");
+			JanelaRedes.extrairParaTmp("exec/smplx/smplx.c", "smplx.c");
+			JanelaRedes.extrairParaTmp("exec/smplx/smpl.h", "smpl.h");
+			JanelaRedes.extrairParaTmp("exec/smplx/randpar.c", "randpar.c");
 			comandoCompilar = new String[] {
 			    "cc", "-I", "/app/tmp",
 			    "-o", "/app/tmp/untitled",
 			    "/app/untitled.c",
-			    "/app/tmp/smpl.c",
-			    "/app/tmp/rand.c",
-			    "/app/tmp/bmeans.c",
+			    "/app/tmp/smplx.c",
+			    "/app/tmp/randpar.c",
 			    "-lm"
 			};
 		}
