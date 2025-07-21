@@ -346,48 +346,48 @@ public class JanelaRedes {
 			gerador.leGabarito("/com/gabaritos/GABARITO_SIMPACK2.DAT");
 		}	
 
-			if(lang.equals("C SIMPACK2")){
-				String codigoGerado = "untitled.cpp"; // ex: vindo de alguma lógica
+		if(lang.equals("C SIMPACK2"))
+		{
+			String codigoGerado = "untitled.cpp"; // ex: vindo de alguma lógica
 
-        // Caminho de origem
-        Path origem = Path.of(codigoGerado);
+			// Caminho de origem
+			Path origem = Path.of(codigoGerado);
 
-        // Caminho de destino (UUID + extensão .py)
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        Path destino = Path.of("/tmp", uuid + ".cpp");
+			// Caminho de destino (UUID + extensão .py)
+			String uuid = UUID.randomUUID().toString().replace("-", "");
+			Path destino = Path.of("/tmp", uuid + ".cpp");
 
-        // Move (ou renomeia) o arquivo
-        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+			// Move (ou renomeia) o arquivo
+			Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
 
-        System.out.println("Arquivo movido para: " + destino.toString());
+			System.out.println("Arquivo movido para: " + destino.toString());
 
-            // 6. Envia o arquivo de volta como download
-            ctx.contentType("application/octet-stream");
-            ctx.header("Content-Disposition", "attachment; filename=\"code.cpp\"");
-            ctx.result(new FileInputStream(destino.toFile()));
-			}
-			else{String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
+		    // 6. Envia o arquivo de volta como download
+		    ctx.contentType("application/octet-stream");
+		    ctx.header("Content-Disposition", "attachment; filename=\"code.cpp\"");
+		    ctx.result(new FileInputStream(destino.toFile()));
+		}
+		else
+		{
+			String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
 
-        // Caminho de origem
-        Path origem = Path.of(codigoGerado);
+			// Caminho de origem
+			Path origem = Path.of(codigoGerado);
 
-        // Caminho de destino (UUID + extensão .py)
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        Path destino = Path.of("/tmp", uuid + ".c");
+			// Caminho de destino (UUID + extensão .py)
+			String uuid = UUID.randomUUID().toString().replace("-", "");
+			Path destino = Path.of("/tmp", uuid + ".c");
 
-        // Move (ou renomeia) o arquivo
-        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+			// Move (ou renomeia) o arquivo
+			Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
 
-        System.out.println("Arquivo movido para: " + destino.toString());
+			System.out.println("Arquivo movido para: " + destino.toString());
 
-            // 6. Envia o arquivo de volta como download
-            ctx.contentType("application/octet-stream");
-            ctx.header("Content-Disposition", "attachment; filename=\"code.c\"");
-            ctx.result(new FileInputStream(destino.toFile()));}
-           
-		
-		
-		
+			// 6. Envia o arquivo de volta como download
+			ctx.contentType("application/octet-stream");
+			ctx.header("Content-Disposition", "attachment; filename=\"code.c\"");
+			ctx.result(new FileInputStream(destino.toFile()));
+		}	
 	});
 	app.post("/executar", ctx -> {
             // 1. Recebe o parâmetro string (ex: nome do usuário)
@@ -404,133 +404,127 @@ public class JanelaRedes {
                 return;
             }
 		String nomeArquivo = arquivo.filename(); // nome original do arquivo
-						    Path destino = Paths.get("untitled.c"); // ajuste esse caminho
+		Path destino = Paths.get("untitled.c"); // ajuste esse caminho
 						
-						    try (InputStream input = arquivo.content()) {
-						        Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
-						    }
+		try (InputStream input = arquivo.content()) {
+			Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
+		}
 
 		if ( lang.equals("SMPL"))
-					{
-						JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
-						JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
-JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
-JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
-						File fsrc = new File("/app/untitled.c");
-        if (!fsrc.exists()) {
-            throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
-        }
+		{
+			JanelaRedes.extrairParaTmp("exec/smpl/smpl.c", "smpl.c");
+			JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
+			JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
+			JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
+			File fsrc = new File("/app/untitled.c");
+       			if (!fsrc.exists()) {
+            			throw new FileNotFoundException("Arquivo untitled.c não encontrado em /app/");
+        		}
 
-							String[] comandoCompilar = {
-    "cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
-    "-o", "/app/tmp/untitled",
-    "/app/untitled.c",
-    "/app/tmp/smpl.c",
-    "/app/tmp/rand.c",
-    "/app/tmp/bmeans.c",
-    "-lm"
-};
+			String[] comandoCompilar = {
+    				"cc", "-I", "/app/tmp", // <- aqui você diz onde está o smpl.h
+   	 			"-o", "/app/tmp/untitled",
+    				"/app/untitled.c",
+    				"/app/tmp/smpl.c",
+    				"/app/tmp/rand.c",
+    				"/app/tmp/bmeans.c",
+    				"-lm"
+			};
 
-							try
-							{
-								// Aqui  executada a compilao
-								// Observao: sempre compila-se tambm os fontes do SMPL
-								// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
-							    Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
-        printSaida("gcc", p.getInputStream());
-        p.waitFor();
+			try
+			{
+				// Aqui  executada a compilao
+				// Observao: sempre compila-se tambm os fontes do SMPL
+				// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
+				Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
+        			printSaida("gcc", p.getInputStream());
+        			p.waitFor();
 
-        File bin = new File("/app/tmp/untitled");
-        if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
-        bin.setExecutable(true);
+        			File bin = new File("/app/tmp/untitled");
+        			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
+       	 			bin.setExecutable(true);
 
-        // Executar binário
-        Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
-        printSaida("exec", p2.getInputStream());
-        p2.waitFor();
-						    	// mover o relatorio para a pasta de relatorios
-						    	File f = new File("untitled.out");
-								String relGerado = "untitled.out";  // arquivo gerado
-Path origem = Path.of(System.getProperty("user.dir"), relGerado);
+        			// Executar binário
+        			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
+        			printSaida("exec", p2.getInputStream());
+        			p2.waitFor();
+				// mover o relatorio para a pasta de relatorios
+				File f = new File("untitled.out");
+				String relGerado = "untitled.out";  // arquivo gerado
+				Path origem = Path.of(System.getProperty("user.dir"), relGerado);
 
-if (!Files.exists(origem)) {
-    throw new FileNotFoundException("Arquivo de relatório não encontrado: " + origem);
-}
+				if (!Files.exists(origem)) {
+    					throw new FileNotFoundException("Arquivo de relatório não encontrado: " + origem);
+				}
 
-String uuid = UUID.randomUUID().toString().replace("-", "");
-Path destinoDir = Path.of("/tmp");
-Files.createDirectories(destinoDir);
-Path destinoex = destinoDir.resolve(uuid + ".out");
+				String uuid = UUID.randomUUID().toString().replace("-", "");
+				Path destinoDir = Path.of("/tmp");
+				Files.createDirectories(destinoDir);
+				Path destinoex = destinoDir.resolve(uuid + ".out");
 
-Files.copy(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
-System.out.println("Relatório movido para: " + destinoex);
+				Files.copy(origem, destinoex, StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("Relatório movido para: " + destinoex);
 
 
-        System.out.println("Arquivo movido para: " + destinoex.toString());
+        			System.out.println("Arquivo movido para: " + destinoex.toString());
 
-            // 6. Envia o arquivo de volta como download
-            ctx.contentType("application/octet-stream");
-            ctx.header("Content-Disposition", "attachment; filename=\"untitled.out\"");
-            ctx.result(new FileInputStream(destinoex.toFile()));}
+				// 6. Envia o arquivo de volta como download
+				ctx.contentType("application/octet-stream");
+				ctx.header("Content-Disposition", "attachment; filename=\"untitled.out\"");
+				ctx.result(new FileInputStream(destinoex.toFile()));}
 							
-							catch (IOException eio)
-							{
-								eio.printStackTrace();	
-							}
-							catch (InterruptedException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-					
-					}
-
-	});
-}
+				catch (IOException eio)
+				{
+					eio.printStackTrace();	
+				}
+				catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}		
+			}
+		});
+	}
 
 	private static void copiarArquivos(File f1, File f2)
 	{
 
 		try {
 			String temp;
-				BufferedReader ori = new BufferedReader(new FileReader(f1));
-				FileWriter dest = new FileWriter(f2,true);
-				while ((temp = ori.readLine()) != null)
-				{
-					temp = temp + "\n";
-					dest.write(temp);
-				}
-				ori.close();
-				dest.close();
+			BufferedReader ori = new BufferedReader(new FileReader(f1));
+			FileWriter dest = new FileWriter(f2,true);
+			while ((temp = ori.readLine()) != null)
+			{
+				temp = temp + "\n";
+				dest.write(temp);
+			}
+			ori.close();
+			dest.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-
-		
+		}	
 	}
 	public static File extrairParaTmp(String caminhoInterno, String nomeArquivo) throws IOException {
-    InputStream in = JanelaRedes.class.getClassLoader().getResourceAsStream(caminhoInterno);
-    if (in == null) {
-        throw new FileNotFoundException("Arquivo não encontrado no classpath: " + caminhoInterno);
-    }
-    File destino = new File("/app/tmp/" + nomeArquivo);
-    destino.getParentFile().mkdirs(); // cria diretório se não existir
-    Files.copy(in, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    return destino;
-}
+    		InputStream in = JanelaRedes.class.getClassLoader().getResourceAsStream(caminhoInterno);
+    		if (in == null) {
+        	throw new FileNotFoundException("Arquivo não encontrado no classpath: " + caminhoInterno);
+    		}
+    		File destino = new File("/app/tmp/" + nomeArquivo);
+    		destino.getParentFile().mkdirs(); // cria diretório se não existir
+    		Files.copy(in, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    		return destino;
+	}
 	private static void printSaida(String prefixo, InputStream inputStream) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String linha;
-            while ((linha = reader.readLine()) != null) {
-                System.out.println("[" + prefixo + "] " + linha);
-            }
-        }
-    }
-
+        	try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            		String linha;
+            		while ((linha = reader.readLine()) != null) {
+                		System.out.println("[" + prefixo + "] " + linha);
+            		}
+        	}
+    	}
 }
 
 	
