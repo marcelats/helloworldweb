@@ -15,7 +15,7 @@ main()
  float timeWarmUp = 5000.0;
  int CS_1, CS_2;
  FILE *p, *saida;
- saida = fopen("MREL2.out","w");
+ saida = fopen("untitled.out","w");
 
  if ((p = sendto(saida)) == NULL)
     printf("Erro na saida \n");
