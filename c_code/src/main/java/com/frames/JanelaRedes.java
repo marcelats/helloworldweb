@@ -455,6 +455,7 @@ public class JanelaRedes {
 			JanelaRedes.extrairParaTmp("exec/smplx/smplx.c", "smplx.c");
 			JanelaRedes.extrairParaTmp("exec/smplx/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smplx/randpar.c", "randpar.c");
+			JanelaRedes.extrairParaTmp("exec/smplx/randpar.h", "randpar.h");
 			comandoCompilar = new String[] {
 			    "cc", "-I", "/app/tmp",
 			    "-o", "/app/tmp/untitled",
