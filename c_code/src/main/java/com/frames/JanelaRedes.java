@@ -32,6 +32,9 @@ import javax.swing.JOptionPane;
 import io.javalin.Javalin;
 import io.javalin.http.UploadedFile;
 import java.io.*;
+
+import java.nio.charset.StandardCharsets;
+
 /**
  * Classe que extende Janela e implementa as funcionalidades para modelagem
  * baseada na teoria de redes de filas
@@ -404,13 +407,15 @@ public class JanelaRedes {
                 return;
             }
 		if (arquivo != null) {
-		    System.out.println("Arquivo recebido:");
-		    System.out.println("Nome: " + arquivo.filename());
-		    System.out.println("Tipo MIME: " + arquivo.contentType());
-		    System.out.println("Tamanho (bytes): " + arquivo.size());
-		} else {
-		    System.out.println("Nenhum arquivo foi enviado com o campo 'arquivo'");
-		}
+    try (InputStream in = arquivo.content()) {
+        String conteudo = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        System.out.println("Conteúdo do arquivo:\n" + conteudo);
+    } catch (Exception e) {
+        System.err.println("Erro ao ler arquivo: " + e.getMessage());
+    }
+} else {
+    System.out.println("Nenhum arquivo enviado com o campo 'arquivo'");
+}
 		String entradaTexto;
 		try (InputStream is = arquivo.content()) {
 			entradaTexto = new String(is.readAllBytes());
