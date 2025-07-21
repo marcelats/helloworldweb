@@ -403,6 +403,14 @@ public class JanelaRedes {
                 ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
                 return;
             }
+		if (arquivo != null) {
+		    System.out.println("Arquivo recebido:");
+		    System.out.println("Nome: " + arquivo.filename());
+		    System.out.println("Tipo MIME: " + arquivo.contentType());
+		    System.out.println("Tamanho (bytes): " + arquivo.size());
+		} else {
+		    System.out.println("Nenhum arquivo foi enviado com o campo 'arquivo'");
+		}
 		String entradaTexto;
 		try (InputStream is = arquivo.content()) {
 			entradaTexto = new String(is.readAllBytes());
