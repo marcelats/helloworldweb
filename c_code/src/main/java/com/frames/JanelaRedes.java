@@ -410,7 +410,7 @@ public class JanelaRedes {
 
 		if ( lang.equals("SMPL"))
 		{
-			File f = new File("rel.out");        
+			File f = new File("untitled.out");        
 			if (f.exists()) 
 			f.delete();
 			
@@ -458,7 +458,7 @@ public class JanelaRedes {
         			printSaida("exec", p2.getInputStream());
         			p2.waitFor();
         			String uuid = UUID.randomUUID().toString().replace("-", "");
-        			Files.move(Path.of("rel.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
+        			Files.move(Path.of("untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
 				// mover o relatorio para a pasta de relatorios
 
 				// 6. Envia o arquivo de volta como download
