@@ -481,7 +481,11 @@ public class JanelaRedes {
 			bin.setExecutable(true);
 			Files.deleteIfExists(Path.of("/app/tmp/untitled.out"));
 			// Executar binário
-			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
+			//Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
+			ProcessBuilder builder = new ProcessBuilder("/app/tmp/untitled");
+			builder.directory(new File("/app/tmp")); // define working dir
+			builder.redirectErrorStream(true);
+			Process p2 = builder.start();
 			printSaida("exec", p2.getInputStream());
 			p2.waitFor();
 			String uuid = UUID.randomUUID().toString().replace("-", "");
