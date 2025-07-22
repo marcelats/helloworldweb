@@ -410,7 +410,7 @@ public class JanelaRedes {
 			if (f.exists()) 
 			f.delete();
 		JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
-		File fsrc = new File("/app/untitled.c");
+		File fsrc = new File("/app/tmp/untitled.c");
 		String originalName = arquivo.filename(); // Ex: untitled.c
 		String extensao = originalName.contains(".") ? originalName.substring(originalName.lastIndexOf(".")) : "";
 		try (InputStream in = arquivo.content(); FileOutputStream out = new FileOutputStream(fsrc)) {
