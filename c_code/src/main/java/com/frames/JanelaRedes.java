@@ -409,6 +409,7 @@ public class JanelaRedes {
 		File f = new File("untitled.out");        
 			if (f.exists()) 
 			f.delete();
+		Files.deleteIfExists(Path.of("/app/tmp/untitled.c"));
 		JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
 		File fsrc = new File("/app/tmp/untitled.c");
 		String originalName = arquivo.filename(); // Ex: untitled.c
@@ -478,12 +479,13 @@ public class JanelaRedes {
 			File bin = new File("/app/tmp/untitled");
 			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
 			bin.setExecutable(true);
-
+			Files.deleteIfExists(Path.of("/app/tmp/untitled.out"));
 			// Executar binário
 			Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
 			printSaida("exec", p2.getInputStream());
 			p2.waitFor();
 			String uuid = UUID.randomUUID().toString().replace("-", "");
+			
 			Files.move(Path.of("untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
 			// mover o relatorio para a pasta de relatorios
 
