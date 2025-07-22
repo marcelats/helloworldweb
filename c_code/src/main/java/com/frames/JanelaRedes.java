@@ -484,7 +484,7 @@ public class JanelaRedes {
 			// Executar binário
 			//Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
 			ProcessBuilder builder = new ProcessBuilder("/app/tmp/untitled");
-			builder.directory(new File("/app/tmp")); // define working dir
+			//builder.directory(new File("/app/tmp")); // define working dir
 			builder.redirectErrorStream(true);
 			Process p2 = builder.start();
 			printSaida("exec", p2.getInputStream());
