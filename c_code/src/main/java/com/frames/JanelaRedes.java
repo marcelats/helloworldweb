@@ -470,9 +470,16 @@ public class JanelaRedes {
 			// Aqui  executada a compilao
 			// Observao: sempre compila-se tambm os fontes do SMPL
 			// isso  bom para no dar conflitos entre cdigos objetos de compiladores diferentes
+			//Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
+			//printSaida("gcc", p.getInputStream());
+			//p.waitFor();
 			Process p = new ProcessBuilder(comandoCompilar).redirectErrorStream(true).start();
-			printSaida("gcc", p.getInputStream());
-			p.waitFor();
+int exitCode = p.waitFor();
+printSaida("gcc", p.getInputStream());
+if (exitCode != 0) {
+    throw new RuntimeException("Erro na compilação C SMPLX (exit code " + exitCode + ")");
+}
+
 
 			File bin = new File("/app/tmp/untitled");
 			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
