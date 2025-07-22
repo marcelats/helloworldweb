@@ -406,9 +406,7 @@ public class JanelaRedes {
                 ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
                 return;
             }
-		File f = new File("untitled.out");        
-			if (f.exists()) 
-			f.delete();
+		
 		Files.deleteIfExists(Path.of("/app/tmp/untitled.c"));
 		JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
 		File fsrc = new File("/app/tmp/untitled.c");
@@ -479,7 +477,10 @@ public class JanelaRedes {
 			File bin = new File("/app/tmp/untitled");
 			if (!bin.exists()) throw new RuntimeException("Compilação falhou: binário não gerado.");
 			bin.setExecutable(true);
-			Files.deleteIfExists(Path.of("/app/tmp/untitled.out"));
+			Files.deleteIfExists(Path.of("untitled.out"));
+			File f = new File("untitled.out");        
+			if (f.exists()) 
+			f.delete();
 			// Executar binário
 			//Process p2 = new ProcessBuilder("/app/tmp/untitled").redirectErrorStream(true).start();
 			ProcessBuilder builder = new ProcessBuilder("/app/tmp/untitled");
@@ -490,7 +491,7 @@ public class JanelaRedes {
 			p2.waitFor();
 			String uuid = UUID.randomUUID().toString().replace("-", "");
 			
-			Files.move(Path.of("app/tmp/untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(Path.of("untitled.out"), Path.of("/tmp", uuid + ".out"), StandardCopyOption.REPLACE_EXISTING);
 			// mover o relatorio para a pasta de relatorios
 
 			// 6. Envia o arquivo de volta como download
