@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------- 
-CÛdigo gerado com o ASDA - Ambiente de SimulaÁ„o DistribuÌda Autom·tico
+C√≥digo gerado com o ASDA - Ambiente de Simula√ß√£o Distribu√≠da Autom√°tico
 --------------------------------------------------------------------------*/
 #include <stdio.h>
-#include "smpl.h"
+#include "smplx.h"
 
 main()
 {
