@@ -406,20 +406,6 @@ public class JanelaRedes {
                 ctx.status(400).result("Arquivo 'arquivo' é obrigatório");
                 return;
             }
-		if (arquivo != null) {
-    try (InputStream in = arquivo.content()) {
-        String conteudo = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        System.out.println("Conteúdo do arquivo:\n" + conteudo);
-    } catch (Exception e) {
-        System.err.println("Erro ao ler arquivo: " + e.getMessage());
-    }
-} else {
-    System.out.println("Nenhum arquivo enviado com o campo 'arquivo'");
-}
-		String entradaTexto;
-		try (InputStream is = arquivo.content()) {
-			entradaTexto = new String(is.readAllBytes());
-		}
 		File f = new File("untitled.out");        
 			if (f.exists()) 
 			f.delete();
