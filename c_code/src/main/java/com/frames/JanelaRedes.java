@@ -456,8 +456,8 @@ public class JanelaRedes {
 			JanelaRedes.extrairParaTmp("exec/smplx/smpl.h", "smpl.h");
 			JanelaRedes.extrairParaTmp("exec/smplx/randpar.c", "randpar.c");
 			JanelaRedes.extrairParaTmp("exec/smplx/randpar.h", "randpar.h");
-			File f = new File("/app/tmp/randpar.h");
-			System.out.println("Arquivo randpar.h existe? " + f.exists() + " | Caminho: " + f.getAbsolutePath());
+			File f2 = new File("/app/tmp/randpar.h");
+			System.out.println("Arquivo randpar.h existe? " + f2.exists() + " | Caminho: " + f2.getAbsolutePath());
 			File dir = new File("/app/tmp");
 			String[] arquivos = dir.list();
 			System.out.println("Arquivos em /app/tmp:");
