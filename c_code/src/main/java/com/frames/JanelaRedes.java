@@ -407,7 +407,7 @@ public class JanelaRedes {
                 return;
             }
 		
-		Files.deleteIfExists(Path.of("/app/tmp/untitled.c"));
+		Files.deleteIfExists(Path.of("untitled.c"));
 		JanelaRedes.extrairParaTmp("exec/smpl/modelo.c", "untitled.c");
 		File fsrc = new File("/app/tmp/untitled.c");
 		String originalName = arquivo.filename(); // Ex: untitled.c
