@@ -453,7 +453,7 @@ public class JanelaRedes {
 		else if(lang.equals("C SMPLX"))
 		{
 			JanelaRedes.extrairParaTmp("exec/smplx/smplx.c", "smplx.c");
-			JanelaRedes.extrairParaTmp("exec/smplx/smpl.h", "smpl.h");
+			JanelaRedes.extrairParaTmp("exec/smplx/smplx.h", "smplx.h");
 			JanelaRedes.extrairParaTmp("exec/smplx/randpar.c", "randpar.c");
 			JanelaRedes.extrairParaTmp("exec/smplx/randpar.h", "randpar.h");
 			JanelaRedes.extrairParaTmp("exec/smplx/declaracoes.h", "declaracoes.h");
