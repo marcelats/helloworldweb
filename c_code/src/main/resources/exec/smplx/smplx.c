@@ -2,7 +2,7 @@
 #include <math.h> 
 #include <stdlib.h>     /* rotinas de memoria e geracao de numeros aleatorios */
 #include <string.h>
-#include "smpl.h"
+#include "smplx.h"
 #include "declaracoes.h" /* estruturas e var*/
 #include "randpar.h"
 
