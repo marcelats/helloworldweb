@@ -429,7 +429,7 @@ public class JanelaRedes {
 			comandoCompilar = new String[] {
 			    "cc", "-I", "/app/tmp",
 			    "-o", "/app/tmp/untitled",
-			    "/app/untitled.c",
+			    "/app/tmp/untitled.c",
 			    "/app/tmp/smpl.c",
 			    "/app/tmp/rand.c",
 			    "/app/tmp/bmeans.c",
