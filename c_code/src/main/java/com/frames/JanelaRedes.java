@@ -372,7 +372,7 @@ public class JanelaRedes {
 		}
 		else
 		{
-			String codigoGerado = "untitled.c"; // ex: vindo de alguma lógica
+			String codigoGerado = graph.getNomeModelo() + ".c"; // ex: vindo de alguma lógica
 
 			// Caminho de origem
 			Path origem = Path.of(codigoGerado);
