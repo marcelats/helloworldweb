@@ -442,13 +442,14 @@ public class JanelaRedes {
                 JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
                 JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
                 comandoCompilar = new String[]{
-                    "cc", "-I", "/app/tmp",
-                    "-o", "/app/tmp/untitled",
-                    "/app/tmp/untitled.c",
-                    "/app/tmp/smpl.c",
-                    "/app/tmp/rand.c",
-                    "/app/tmp/bmeans.c",
-                    "-lm"
+                    "docker", "run", "--rm",
+    "-v", "/tmp/sessao123" + ":/app",
+    "--memory=256m",
+    "--cpus=1",
+    "--network=none",
+    "gcc:12",
+    "bash", "-c",
+    "cc -I /app/tmp -o /app/tmp/untitled /app/tmp/untitled.c /app/tmp/smpl.c /app/tmp/rand.c /app/tmp/bmeans.c -lm && /app/tmp/untitled"
                 };
             } else if (lang.equals("C SMPLX")) {
                 System.out.println("Modo de compilação: C SMPLX");
