@@ -737,7 +737,7 @@ public class GeradorSMPL extends Gerador {
 		buffer.delete(0,119);
 		// geraSchedule(numReq,numeroRecurso,false,null);
 		geraSchedule(numReq,"0.0","          ");
-		
+		System.out.println("geraProximaChegada");
 		geraStream(numeroRecurso,"          ", true);
 		
 	
@@ -1173,6 +1173,7 @@ public class GeradorSMPL extends Gerador {
 			geraCase(c.getRequest(id)); // gerando request do n    com identifica      o id			
 			
 			geraCodeEstatisticas(indice);
+			System.out.println("geraEventos");
 			geraStream(indice,"          ", false);
 			
 			geraRequest(indice);
