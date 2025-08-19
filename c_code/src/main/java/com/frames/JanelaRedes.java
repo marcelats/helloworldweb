@@ -443,16 +443,35 @@ public class JanelaRedes {
                 JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
 				System.out.println(System.getenv("PATH"));
 
-                comandoCompilar = new String[]{
-                    "docker", "run", "--rm",
-    "-v", "/tmp/sessao123" + ":/app",
+                Path tempDir = Files.createTempDirectory("sessao"); // /tmp/sessao123
+String sessaoDir = tempDir.toAbsolutePath().toString();
+
+// Salvar arquivos do usuário em sessaoDir...
+
+String[] comandoDocker = {
+    "docker", "run", "--rm",
+    "-v", sessaoDir + ":/app",
     "--memory=256m",
     "--cpus=1",
+    "--pids-limit=50",
     "--network=none",
     "gcc:12",
     "bash", "-c",
-    "cc -I /app/tmp -o /app/tmp/untitled /app/tmp/untitled.c /app/tmp/smpl.c /app/tmp/rand.c /app/tmp/bmeans.c -lm && /app/tmp/untitled"
-                };
+    "cc -I /app/tmp -o /app/tmp/untitled /app/tmp/*.c -lm && /app/tmp/untitled"
+};
+
+Process p = new ProcessBuilder(comandoDocker)
+        .redirectErrorStream(true)
+        .start();
+
+// Capturar saída
+try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+}
+
             } else if (lang.equals("C SMPLX")) {
                 System.out.println("Modo de compilação: C SMPLX");
                 JanelaRedes.extrairParaTmp("exec/smplx/smplx.c", "smplx.c");
