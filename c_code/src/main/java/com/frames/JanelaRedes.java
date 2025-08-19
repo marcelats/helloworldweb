@@ -169,10 +169,10 @@ public class JanelaRedes {
 				numberOfServers = partes[5];
 				filaVazia = Boolean.parseBoolean(partes[6]);
 				maxMin = Boolean.parseBoolean(partes[7]);
-				sequencia = partes[8];
-				sequenciaFonte = partes[9];
-				desvioPadrao = partes[10];
-				desvioPadraoFonte = partes [11];
+				sequenciaFonte = partes[8];
+				sequencia = partes[9];
+				desvioPadraoFonte = partes[10];
+				desvioPadrao = partes[11];
 			}
 			if(tipo==1||tipo==3){
 				Node node = new Node(0,0,null,tipo,nodeId,"");
