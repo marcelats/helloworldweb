@@ -240,8 +240,11 @@ public class GeradorSMPL extends Gerador {
 		
 		if (!fonte)
 		{
+			System.out.println("nao eh fonte");
 			if ( (graph.getNode(indice).getSequencia() != null) && (!graph.getNode(indice).getSequencia().equals("0")))
-			{	buffer.delete(0,119);
+			{	
+				System.out.println("A");
+				buffer.delete(0,119);
 				buffer.append(espaco);
 				buffer.append("stream(");
 				buffer.append(graph.getNode(indice).getSequencia());
@@ -251,8 +254,10 @@ public class GeradorSMPL extends Gerador {
 		}
 		else
 		{
+			System.out.println(" eh fonte");
 			if ( (graph.getNode(indice).getSequenciaFonte() != null) && (!graph.getNode(indice).getSequenciaFonte().equals("0")))
 			{
+				System.out.println("B");
 				buffer.delete(0,119);
 				buffer.append(espaco);
 				buffer.append("stream(");
