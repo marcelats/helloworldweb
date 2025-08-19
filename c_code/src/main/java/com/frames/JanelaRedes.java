@@ -441,6 +441,8 @@ public class JanelaRedes {
                 JanelaRedes.extrairParaTmp("exec/smpl/smpl.h", "smpl.h");
                 JanelaRedes.extrairParaTmp("exec/smpl/rand.c", "rand.c");
                 JanelaRedes.extrairParaTmp("exec/smpl/bmeans.c", "bmeans.c");
+				System.out.println(System.getenv("PATH"));
+
                 comandoCompilar = new String[]{
                     "docker", "run", "--rm",
     "-v", "/tmp/sessao123" + ":/app",
