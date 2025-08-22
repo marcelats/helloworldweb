@@ -5,6 +5,7 @@ import os
 import glob
 from flask import Flask, request, jsonify
 import logging
+import requests
 app = Flask(__name__)
 
 @app.route('/executar', methods=['POST'])
@@ -16,10 +17,13 @@ def executar():
     with tempfile.TemporaryDirectory() as tmpdir:
         if lang == 'Python':
             file_path = os.path.join(tmpdir, 'code.py')
-            with open(file_path, 'w') as f:
-                f.write(code.read().decode())
-            cmd = ['python3', file_path]
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            code.save(file_path)
+            
+            with open(file_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    files={"code": ("code.py", f, "text/x-python")}  # boa prática: nome e MIME
+                )
 
         elif lang == 'Java':
             jar_path = os.path.join(os.path.dirname(__file__), 'javasim-2.3.jar')
@@ -99,11 +103,12 @@ def executar():
 
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
 
-        return jsonify({
-            'stdout': proc.stdout,
-            'stderr': proc.stderr,
-            'returncode': proc.returncode
-        })
+        #return jsonify({
+        #    'stdout': proc.stdout,
+        #    'stderr': proc.stderr,
+        #    'returncode': proc.returncode
+        #})
+        return resp.json()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
