@@ -22,7 +22,8 @@ def executar():
             with open(file_path, "rb") as f:
                 resp = requests.post(
                     "http://192.168.100.252:8000/execute",  # endpoint do executor
-                    files={"code": ("code.py", f, "text/x-python")}  # boa prática: nome e MIME
+                    files={"code": ("code.py", f, "text/x-python")},
+                    data={"lang": "Python"}  # boa prática: nome e MIME
                 )
 
         elif lang == 'Java':
