@@ -98,11 +98,13 @@ def executar():
         
         else:
             file_path = os.path.join(tmpdir, 'code.R')
-            with open(file_path, 'w') as f:
-                f.write(code.read().decode())
-            cmd = ['Rscript', file_path]
-
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            code.save(file_path)
+            with open(file_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    files={"code": f},
+                    data={"lang": "R"}  # boa prática: nome e MIME
+                )
 
         #return jsonify({
         #    'stdout': proc.stdout,
