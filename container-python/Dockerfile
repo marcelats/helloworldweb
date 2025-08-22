@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 RUN pip install flask simpy
+RUN pip install requests
+
 
 # Instala a biblioteca 'simmer' do R
 RUN R -e "install.packages('simmer', repos='https://cloud.r-project.org')"
