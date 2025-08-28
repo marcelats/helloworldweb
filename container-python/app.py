@@ -35,31 +35,38 @@ def executar():
 
             zip_path = os.path.join(tmpdir, 'codigo.zip')
             code.save(zip_path)
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(tmpdir)
-            java_files = glob.glob(os.path.join(tmpdir, "*.java"))    
-            if not java_files:
-                logging.error("Nenhum arquivo .java encontrado!")
-            else:
-                logging.info("Compilando arquivos: %s", java_files)
 
-                compile_cmd = ['javac', '-cp', jar_path] + java_files
-                compile_proc = subprocess.run(compile_cmd, capture_output=True, text=True)
+            with open(zip_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    files={"code": f},
+                    data={"lang": "Java"}  # boa prática: nome e MIME
+                )
+            #with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            #    zip_ref.extractall(tmpdir)
+            #java_files = glob.glob(os.path.join(tmpdir, "*.java"))    
+            #if not java_files:
+            #    logging.error("Nenhum arquivo .java encontrado!")
+            #else:
+            #    logging.info("Compilando arquivos: %s", java_files)
 
-                if compile_proc.returncode != 0:
-                    logging.error("Erro na compilação:")
-                    logging.error("STDERR:\n%s", compile_proc.stderr.strip())
-                    logging.error("STDOUT:\n%s", compile_proc.stdout.strip())
-                else:
-                    logging.info("Compilação bem-sucedida!")
+            #    compile_cmd = ['javac', '-cp', jar_path] + java_files
+            #    compile_proc = subprocess.run(compile_cmd, capture_output=True, text=True)
+
+            #    if compile_proc.returncode != 0:
+            #        logging.error("Erro na compilação:")
+            #        logging.error("STDERR:\n%s", compile_proc.stderr.strip())
+            #        logging.error("STDOUT:\n%s", compile_proc.stdout.strip())
+            #    else:
+            #        logging.info("Compilação bem-sucedida!")
 
         # Executar a Main
-                    run_cmd = ['java', '-cp', f'{tmpdir}:{jar_path}', 'Main']
-                    proc = subprocess.run(run_cmd, capture_output=True, text=True)
+            #        run_cmd = ['java', '-cp', f'{tmpdir}:{jar_path}', 'Main']
+            #        proc = subprocess.run(run_cmd, capture_output=True, text=True)
 
-                    logging.info("Saída da execução:")
-                    logging.info("STDOUT:\n%s", proc.stdout.strip())
-                    logging.info("STDERR:\n%s", proc.stderr.strip())
+            #        logging.info("Saída da execução:")
+            #        logging.info("STDOUT:\n%s", proc.stdout.strip())
+            #        logging.info("STDERR:\n%s", proc.stderr.strip())
                     
         elif lang == 'C SMPL':
             file_path = os.path.join(tmpdir, 'code.c')
