@@ -71,37 +71,44 @@ def executar():
         elif lang == 'C SMPL':
             file_path = os.path.join(tmpdir, 'code.c')
             with open(file_path, 'w') as f:
-                f.write(code.read().decode())
+                code.save(file_path)
+            
+            with open(file_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    files={"code": f},
+                    data={"lang": "C SMPL"}  # boa prática: nome e MIME
+                )
 
             # Ajuste para onde está instalada sua biblioteca SMPL
-            smpl_include_path = '/usr/local/include'  # Ou onde estiver o smpl.h
-            smpl_lib_path = '/usr/local/lib'          # Ou onde estiver libsmpl.a/.so
+            #smpl_include_path = '/usr/local/include'  # Ou onde estiver o smpl.h
+            #smpl_lib_path = '/usr/local/lib'          # Ou onde estiver libsmpl.a/.so
 
-            output_binary = os.path.join(tmpdir, 'code_exec')
+            #output_binary = os.path.join(tmpdir, 'code_exec')
 
-            compile_cmd = [
-                'gcc',
-                file_path,
-                '-I', smpl_include_path,
-                '-L', smpl_lib_path,
-                '-lsmpl',
-                '-o', output_binary
-            ]
+            #compile_cmd = [
+            #    'gcc',
+            #    file_path,
+            #    '-I', smpl_include_path,
+            #    '-L', smpl_lib_path,
+            #    '-lsmpl',
+            #    '-o', output_binary
+            #]
 
-            compile_proc = subprocess.run(compile_cmd, capture_output=True, text=True)
+            #compile_proc = subprocess.run(compile_cmd, capture_output=True, text=True)
 
-            if compile_proc.returncode != 0:
-                logging.error("Erro na compilação C SMPL:")
-                logging.error("STDERR:\n%s", compile_proc.stderr.strip())
-                logging.error("STDOUT:\n%s", compile_proc.stdout.strip())
-                return jsonify({
-                    'stdout': compile_proc.stdout,
-                    'stderr': compile_proc.stderr,
-                    'returncode': compile_proc.returncode
-                })
+            #if compile_proc.returncode != 0:
+            #    logging.error("Erro na compilação C SMPL:")
+            #    logging.error("STDERR:\n%s", compile_proc.stderr.strip())
+            #    logging.error("STDOUT:\n%s", compile_proc.stdout.strip())
+            #    return jsonify({
+            #        'stdout': compile_proc.stdout,
+            #        'stderr': compile_proc.stderr,
+            #        'returncode': compile_proc.returncode
+            #    })
 
             # Executar o binário
-            proc = subprocess.run([output_binary], capture_output=True, text=True, timeout=10)
+            #proc = subprocess.run([output_binary], capture_output=True, text=True, timeout=10)
         
         else:
             file_path = os.path.join(tmpdir, 'code.R')
