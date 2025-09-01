@@ -21,7 +21,7 @@ def executar():
             
             with open(file_path, "rb") as f:
                 resp = requests.post(
-                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    "http://192.168.100.121:8000/execute",  # endpoint do executor
                     files={"code": ("code.py", f, "text/x-python")},
                     data={"lang": "Python"}  # boa prática: nome e MIME
                 )
@@ -38,7 +38,7 @@ def executar():
 
             with open(zip_path, "rb") as f:
                 resp = requests.post(
-                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    "http://192.168.100.121:8000/execute",  # endpoint do executor
                     files={"code": f},
                     data={"lang": "Java"}  # boa prática: nome e MIME
                 )
@@ -75,7 +75,7 @@ def executar():
             
             with open(file_path, "rb") as f:
                 resp = requests.post(
-                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    "http://192.168.100.121:8000/execute",  # endpoint do executor
                     files={"code": f},
                     data={"lang": "C SMPL"}  # boa prática: nome e MIME
                 )
@@ -115,7 +115,7 @@ def executar():
             code.save(file_path)
             with open(file_path, "rb") as f:
                 resp = requests.post(
-                    "http://192.168.100.252:8000/execute",  # endpoint do executor
+                    "http://192.168.100.121:8000/execute",  # endpoint do executor
                     files={"code": f},
                     data={"lang": "R"}  # boa prática: nome e MIME
                 )
