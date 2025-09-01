@@ -79,6 +79,17 @@ def executar():
                     files={"code": f},
                     data={"lang": "C SMPL"}  # boa prática: nome e MIME
                 )
+        elif lang == 'C SMPLX':
+            file_path = os.path.join(tmpdir, 'code.c')
+            with open(file_path, 'w') as f:
+                code.save(file_path)
+            
+            with open(file_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.100.121:8000/execute",  # endpoint do executor
+                    files={"code": f},
+                    data={"lang": "C SMPLX"}  # boa prática: nome e MIME
+                )
 
             # Ajuste para onde está instalada sua biblioteca SMPL
             #smpl_include_path = '/usr/local/include'  # Ou onde estiver o smpl.h
