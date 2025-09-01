@@ -973,7 +973,7 @@ public class GeradorSMPL extends Gerador {
 			geraEstatisticaFilaVazia(numeroRecurso);
 		}*/
 		buffer.delete(0,119);
-		buffer.append("          if (request(\"\"");
+		buffer.append("          if (request(\"\",");
 		
 		buffer.append(graph.getNode(numeroRecurso).getNomeCentroServico());		
 		buffer.append(", Customer,0) == 0)");
