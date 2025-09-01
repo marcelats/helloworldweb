@@ -990,7 +990,7 @@ public class GeradorSMPL extends Gerador {
 	 */
 	private void geraRelease(int numeroRecurso){		
 		buffer.delete(0,119);
-		buffer.append("          release(");
+		buffer.append("          release(\"\",");
 		buffer.append(graph.getNode(numeroRecurso).getNomeCentroServico());
 		buffer.append(", Customer);");
 		gravaArquivo(buffer);
