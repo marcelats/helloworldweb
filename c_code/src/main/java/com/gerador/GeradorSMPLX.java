@@ -507,14 +507,10 @@ public class GeradorSMPLX extends Gerador {
 	private void defineArqSaida(){
 		
 		buffer.delete(0,119);
-		buffer.append(" FILE *p, *saida;\n");
-		buffer.append(" saida = fopen(\"");
 		buffer.append(graph.getNomeModelo());
 		buffer.append(".out\",\"w\");\n"); // chegou a quase 100 caracteres j   
 		gravaArquivo(buffer);
 		buffer.delete(0,119);
-		buffer.append(" if ((p = sendto(saida)) == NULL)\n");
-		buffer.append("    printf(\"Erro na saida \\n\");");
 		gravaArquivo(buffer);
 		
 		
@@ -1303,7 +1299,6 @@ public class GeradorSMPLX extends Gerador {
 		if (!alreadyClosed)
 		{
 			buffer.delete(0,119);
-			buffer.append("   fclose(saida);");
 			gravaArquivo(buffer);
 		}
 			
@@ -1318,7 +1313,7 @@ public class GeradorSMPLX extends Gerador {
 		buffer.delete(0,119);
 		//buffer.append("   report();");
 		
-		buffer.append("  fprintf(saida,\"TempoSimulado: %f\\n\", time() );\n");
+		buffer.append("  printf(\"TempoSimulado: %f\\n\", time() );\n");
 		gravaArquivo(buffer);
 		
 		buffer.delete(0,119);
@@ -1328,15 +1323,15 @@ public class GeradorSMPLX extends Gerador {
 			if (temp.getTipoNo()==2)
 			{
 				buffer.delete(0,119);
-				buffer.append("  fprintf(saida,\"Utilizacao (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", utilizacao_recurso(\"" + 
+				buffer.append("  printf(\"Utilizacao (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", utilizacao_recurso(\"" + 
 						temp.getNomeCentroServico() + "\"));");
 				gravaArquivo(buffer);
 				buffer.delete(0,119);
-				buffer.append("  fprintf(saida,\"Comprimento medio fila (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", comprimento_medio_fila(\"" + 
+				buffer.append("  printf(\"Comprimento medio fila (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", comprimento_medio_fila(\"" + 
 						temp.getNomeCentroServico() + "\"));");
 				gravaArquivo(buffer);
 				buffer.delete(0,119);
-				buffer.append("  fprintf(saida,\"Periodo medio ocupado (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", periodo_medio_ocupado(\"" + 
+				buffer.append("  printf(\"Periodo medio ocupado (\\\"" + temp.getNomeCentroServico() + "\\\") = %g\\n\", periodo_medio_ocupado(\"" + 
 						temp.getNomeCentroServico() + "\"));");
 				gravaArquivo(buffer);
 				buffer.delete(0,119);
@@ -1418,13 +1413,13 @@ public class GeradorSMPLX extends Gerador {
 					buffer.delete(0,119);
 					if (!title)  // escreve t   tulo da gera      o de relat   rios para esta estat   stica
 					{
-						buffer.append("   fprintf(saida,\"\\n\\nRelat   rio - M   ximo e M   nimo das Filas \\n \"); ");
+						buffer.append("   printf(\"\\n\\nRelat   rio - M   ximo e M   nimo das Filas \\n \"); ");
 						gravaArquivo(buffer);
 						buffer.delete(0,119);
 						title = true;
 					}
 					
-					buffer.append("   fprintf(saida,\"\\n Maximo clientes recurso "
+					buffer.append("   printf(\"\\n Maximo clientes recurso "
 							+ temp.getNomeCentroServico() 
 							+ " : %i \", Max"
 							+ temp.getIdNo()
@@ -1432,7 +1427,7 @@ public class GeradorSMPLX extends Gerador {
 					gravaArquivo(buffer);
 					
 					buffer.delete(0,119);
-					buffer.append("   fprintf(saida,\"\\n M   nimo clientes recurso "
+					buffer.append("   printf(\"\\n M   nimo clientes recurso "
 							+ temp.getNomeCentroServico() 
 							+ " : %i \", Min"
 							+ temp.getIdNo()
@@ -1466,13 +1461,13 @@ public class GeradorSMPLX extends Gerador {
 					buffer.delete(0,119);
 					if (!title)  // escreve t   tulo da gera      o de relat   rios para esta estat   stica
 					{
-						buffer.append("   fprintf(saida,\"\\n\\nRelat   rio - Total de Vezes - Fila Vazia \\n \"); ");
+						buffer.append("   printf(\"\\n\\nRelat   rio - Total de Vezes - Fila Vazia \\n \"); ");
 						gravaArquivo(buffer);
 						buffer.delete(0,119);
 						title = true;
 					}
 					
-					buffer.append("   fprintf(saida,\"\\n Total de Clientes do recurso "
+					buffer.append("   printf(\"\\n Total de Clientes do recurso "
 							+ temp.getNomeCentroServico() 
 							+ " : %i \", Tot"
 							+ temp.getIdNo()
@@ -1480,7 +1475,7 @@ public class GeradorSMPLX extends Gerador {
 					gravaArquivo(buffer);
 					
 					buffer.delete(0,119);
-					buffer.append("   fprintf(saida,\"\\n Total clientes que encontraram fila vazia no recurso "
+					buffer.append("   printf(\"\\n Total clientes que encontraram fila vazia no recurso "
 							+ temp.getNomeCentroServico() 
 							+ " : %i \", Vaz"
 							+ temp.getIdNo()
