@@ -4,7 +4,7 @@ Código gerado com o ASDA - Ambiente de Simulação Distribuída Automático
 #include <stdio.h>
 #include "smplx.h"
 
-main()
+int main()
 {
  /* definicoes */
 %0define_tempo_num_max
