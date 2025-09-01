@@ -506,9 +506,7 @@ public class GeradorSMPLX extends Gerador {
 	 */
 	private void defineArqSaida(){
 		
-		buffer.delete(0,119);
-		buffer.append(graph.getNomeModelo());
-		buffer.append(".out\",\"w\");\n"); // chegou a quase 100 caracteres j   
+		buffer.delete(0,119);  
 		gravaArquivo(buffer);
 		buffer.delete(0,119);
 		gravaArquivo(buffer);
