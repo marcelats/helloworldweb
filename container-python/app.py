@@ -27,11 +27,6 @@ def executar():
                 )
 
         elif lang == 'Java':
-            jar_path = os.path.join(os.path.dirname(__file__), 'javasim-2.3.jar')
-            if not os.path.exists(jar_path):
-                raise FileNotFoundError(f"Arquivo .jar não encontrado: {jar_path}")
-            else:
-                logging.info(f"JAR localizado: {jar_path}")
 
             zip_path = os.path.join(tmpdir, 'codigo.zip')
             code.save(zip_path)
