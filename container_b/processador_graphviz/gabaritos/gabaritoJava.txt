@@ -28,7 +28,7 @@ import org.javasim.SimulationProcess;
 public class Controle extends SimulationProcess
 {
 
-    %0declara_objetos    
+%0declara_objetos    
 
     public static double tempoRespostaTotal = 0.0;
     public static long totalClientes = 0;
@@ -45,12 +45,12 @@ public class Controle extends SimulationProcess
     {
         try
         {
-            %1estancia_objetos
+%1estancia_objetos
             chegadas.activate();
 
             Simulation.start();
 
-            %2tempo_total
+%2tempo_total
 
             System.out.println("Tempo total = "+currentTime());
             System.out.println("Total de clientes presentes no sistema = " + totalClientes);
@@ -59,12 +59,12 @@ public class Controle extends SimulationProcess
             System.out.println("Tempo médio de resposta = "
                 + (tempoRespostaTotal / clientesProcessados));
             
-            %3relatorio_final
+%3relatorio_final
 
             Simulation.stop();
 
             chegadas.terminate();
-            %4encerra_processos
+%4encerra_processos
 
             SimulationProcess.mainResume();
         }
@@ -139,14 +139,14 @@ public class Cliente
 
         tempoResposta = 0.0;
         tempoChegada = Scheduler.currentTime();
-        %5insere_na_fila_primeiro_recurso
+%5insere_na_fila_primeiro_recurso
         Controle.totalClientes++;
 
         if (vazio)
         {
             try
             {
-                %6ativa_primeiro_recurso
+%6ativa_primeiro_recurso
             }
             catch (SimulationException e)
             {
@@ -263,7 +263,7 @@ import org.javasim.streams.ExponentialStream;
     private Cliente cliente;
     public double tempoDeServico = 0.0;
     
-    %8construtor_do_recurso
+%8construtor_do_recurso
     {
         taxa = new ExponentialStream(media);
         cliente = null;
@@ -276,7 +276,7 @@ import org.javasim.streams.ExponentialStream;
 
         while (!terminated())
         {
-            %9retirar_da_fila
+%9retirar_da_fila
                 try
                 {
                     hold(serviceTime());
@@ -291,7 +291,7 @@ import org.javasim.streams.ExponentialStream;
                 fimAtividade = currentTime();
                 tempoDeServico += fimAtividade - inicioAtividade;
                 Controle.totalServico += tempoDeServico;
-                %10ativa_proximo_recurso
+%10ativa_proximo_recurso
             }
         
             try
