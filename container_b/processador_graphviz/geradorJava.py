@@ -171,28 +171,28 @@ class GeradorJava:
 		for n in listaNodes:
 			linha1 = []
 			variavel = n.getNomeNode().lower()
-			linha1.append('	public static ' + n.getNomeNode() +' '+ variavel + ' = null;\n')
-			linha1.append('	public static Fila filaDo' + n.getNomeNode() + ' = new Fila();\n\n' )
+			linha1.append('	  public static ' + n.getNomeNode() +' '+ variavel + ' = null;\n')
+			linha1.append('	  public static Fila filaDo' + n.getNomeNode() + ' = new Fila();\n\n' )
 			
 			controle.writelines(linha1)
 
 	def estanciaObjetos(self, controle):
 		
 		no = self.graph.getNodePrimeiroRecurso()
-		linha = '			Chegadas chegadas = new Chegadas('+ no.getMediaChegadas() + ');\n'
+		linha = '			      Chegadas chegadas = new Chegadas('+ no.getMediaChegadas() + ');\n'
 		controle.write(linha)
 
 		listaNodes = self.graph.getListaNode()
 
 		for n in listaNodes:
 			variavel = n.getNomeNode().lower()
-			linha = '			Controle.'+ variavel+ ' = new ' + n.getNomeNode() + '('+ n.getMediaServico() +');\n'
+			linha = '			      Controle.'+ variavel+ ' = new ' + n.getNomeNode() + '('+ n.getMediaServico() +');\n'
 			controle.write(linha)
 
 
 	def tempoTotal(self, controle):
 		
-		linha = '			hold('+self.graph.getTempoExecucao()+');\n'
+		linha = '			      hold('+self.graph.getTempoExecucao()+');\n'
 		controle.write(linha)
 
 	def relatorioFinal(self, controle):
@@ -201,8 +201,8 @@ class GeradorJava:
 		for n in listaNodes:
 			linha1 = []
 			variavel = n.getNomeNode().lower()
-			linha1.append('			System.out.println("Utilização do '+ n.getNomeNode()+' = " + Controle.'+ variavel +'.tempoDeServico);\n')
-			linha1.append('			System.out.println("Comprimento médio de fila' + n.getNomeNode()+ ' = "' +
+			linha1.append('			      System.out.println("Utilização do '+ n.getNomeNode()+' = " + Controle.'+ variavel +'.tempoDeServico);\n')
+			linha1.append('			      System.out.println("Comprimento médio de fila' + n.getNomeNode()+ ' = "' +
 						'+ (Controle.filaDo'+ n.getNomeNode()+'.clientesEmFila / Controle.filaDo'+ n.getNomeNode()+'.checkFila));\n')
 			
 			controle.writelines(linha1)
@@ -212,15 +212,15 @@ class GeradorJava:
 		
 		for n in listaNodes:
 			variavel = n.getNomeNode().lower()
-			linha = '			Controle.'+ variavel+'.terminate();\n'
+			linha = '            Controle.'+ variavel+'.terminate();\n'
 			controle.write(linha)
 
 	def insereNaFila(self, cliente):
 
 		n = self.graph.getNodePrimeiroRecurso()
 		linha1 = []
-		linha1.append('		vazio = Controle.filaDo'+n.getNomeNode()+'.isEmpty();\n')
-		linha1.append('		Controle.filaDo'+n.getNomeNode()+'.enqueue(this);\n' )
+		linha1.append('		    vazio = Controle.filaDo'+n.getNomeNode()+'.isEmpty();\n')
+		linha1.append('		    Controle.filaDo'+n.getNomeNode()+'.enqueue(this);\n' )
 			
 		cliente.writelines(linha1)
 
@@ -228,7 +228,7 @@ class GeradorJava:
 
 		n = self.graph.getNodePrimeiroRecurso()
 		variavel = n.getNomeNode().lower()
-		linha = '				Controle.'+variavel+'.activate();\n'
+		linha = '				        Controle.'+variavel+'.activate();\n'
 		cliente.write(linha)
 
 	def nomeDoRecurso(self, recurso, n):
