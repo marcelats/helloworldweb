@@ -238,19 +238,19 @@ class GeradorJava:
 
 	def construtorDoRecurso(self, recurso, n):
 
-		linha = '	public '+n.getNomeNode()+'(double media)\n'
+		linha = '    public '+n.getNomeNode()+'(double media)\n'
 		recurso.write(linha)
 		
 
 	def retirarDaFila(self, recurso, n):
 
 		linha1 = []
-		linha1.append('			while (!Controle.filaDo'+n.getNomeNode()+'.isEmpty())\n')
-		linha1.append('			{\n')
-		linha1.append('				inicioAtividade = currentTime();\n\n')
-		linha1.append('				Controle.filaDo'+n.getNomeNode()+'.checkFila++;\n')
-		linha1.append('				Controle.filaDo'+n.getNomeNode()+'.clientesEmFila += Controle.filaDo'+n.getNomeNode()+'.queueSize();\n')
-		linha1.append('				cliente = Controle.filaDo'+n.getNomeNode()+'.dequeue();\n\n')
+		linha1.append('			      while (!Controle.filaDo'+n.getNomeNode()+'.isEmpty())\n')
+		linha1.append('			      {\n')
+		linha1.append('				        inicioAtividade = currentTime();\n\n')
+		linha1.append('				        Controle.filaDo'+n.getNomeNode()+'.checkFila++;\n')
+		linha1.append('				        Controle.filaDo'+n.getNomeNode()+'.clientesEmFila += Controle.filaDo'+n.getNomeNode()+'.queueSize();\n')
+		linha1.append('				        cliente = Controle.filaDo'+n.getNomeNode()+'.dequeue();\n\n')
 		
 		recurso.writelines(linha1)
 
@@ -260,9 +260,9 @@ class GeradorJava:
 		if len(no.edges) > 1:
 			no.setProximoProb(True)
 			linha1 = []
-			linha1.append('				Random x = new Random();\n')
-			linha1.append('				int aleatorio;\n')
-			linha1.append('				aleatorio = x.nextInt(1000);\n\n')
+			linha1.append('                Random x = new Random();\n')
+			linha1.append('                int aleatorio;\n')
+			linha1.append('                aleatorio = x.nextInt(1000);\n\n')
 			
 			recurso.writelines(linha1)
 
@@ -274,30 +274,30 @@ class GeradorJava:
 				inicio = fim
 				variavel = e.destino.getNomeNode().lower()
 				linha = []
-				linha.append('					vazio = Controle.filaDo' + e.destino.getNomeNode() + '.isEmpty();\n')
-				linha.append('					Controle.filaDo' + e.destino.getNomeNode() + '.enqueue(cliente);\n\n')
-				linha.append('					if (vazio)\n')
-				linha.append('					{\n')
-				linha.append('						try\n')
-				linha.append('						{\n')
-				linha.append('							Controle.' + variavel + '.activate();\n')
-				linha.append('						}\n')
-				linha.append('						catch (SimulationException e)\n')
-				linha.append('						{\n')
-				linha.append('						}\n')
-				linha.append('						catch (RestartException e)\n')
-				linha.append('						{\n')
-				linha.append('						}\n')
-				linha.append('					}\n')
-				linha.append('				}\n')
+				linha.append('                vazio = Controle.filaDo' + e.destino.getNomeNode() + '.isEmpty();\n')
+				linha.append('                Controle.filaDo' + e.destino.getNomeNode() + '.enqueue(cliente);\n\n')
+				linha.append('                if (vazio)\n')
+				linha.append('                {\n')
+				linha.append('                    try\n')
+				linha.append('                    {\n')
+				linha.append('                        Controle.' + variavel + '.activate();\n')
+				linha.append('                    }\n')
+				linha.append('                    catch (SimulationException e)\n')
+				linha.append('                    {\n')
+				linha.append('                    }\n')
+				linha.append('                    catch (RestartException e)\n')
+				linha.append('                    {\n')
+				linha.append('                    }\n')
+				linha.append('                }\n')
+				linha.append('            }\n')
 				
 				recurso.writelines(linha)
 
 		else:
 			if no.edges[0].destino.getTipoNode() == '3':
 				linha = []
-				linha.append('\n				Controle.clientesProcessados++;\n')
-				linha.append('				cliente.finished();\n\n')
+				linha.append('\n                Controle.clientesProcessados++;\n')
+				linha.append('                cliente.finished();\n\n')
 				
 				recurso.writelines(linha)
 				
