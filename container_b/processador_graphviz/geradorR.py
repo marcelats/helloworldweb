@@ -1,7 +1,7 @@
 
 from classes import graph
 from classes import node
-
+import logging
 class GeradorR:
 
 	def __init__(self, modelo):
@@ -104,6 +104,7 @@ class GeradorR:
 
 	def criarTrajetoriaAleatoria(self):
 		listaNodes = self.graph.getListaNodeTra()
+		logging.info(listaNodes)
 		i = 0
 		linha1 = []
 		linha1.append('	seize("' + listaNodes[0].getNomeNode().lower()+'", 1) %>%\n')
