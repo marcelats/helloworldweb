@@ -92,7 +92,8 @@ class Graph:
 
         for n in self.graphNodes:
             if n.getTipoNode() != '1':
-                lista.append(n)       
+                lista.append(n)      
+        print(lista)
         return lista 
 #---------------------- SETS --------------------------------
 
