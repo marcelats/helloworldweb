@@ -2,7 +2,7 @@ from classes import node
 
 #import graphviz
 import pydotplus
-
+import logging
 class Graph:
 
     def __init__(self):
@@ -131,7 +131,7 @@ class Graph:
     def buscarInformacoes(self, nomeArquivo):
         # abre o arquivo modelo1.gv/dot e pega todas as informações em uma lista
         graph=pydotplus.graphviz.graph_from_dot_file(nomeArquivo) 
-        print(graph)
+        logging.info(graph)
         nodesDot=graph.get_nodes() # retira do modelo uma lista de nodes
         edgesDot=graph.get_edges() # retira do modelo uma lista de edges
         
