@@ -117,6 +117,7 @@ class GeradorR:
 			logging.info(i)
 			#print('tamanho lista = ', len(listaNodes)-1)
 			if len(listaNodes[i].edges) > 1:
+				logging.info("len(listaNodes[i].edges)>1")
 				prob = ''
 				for e in listaNodes[i].edges:
 					if e == listaNodes[i].edges[-1]:
@@ -211,12 +212,13 @@ class GeradorR:
 					#print('valor do i', i)
 						
 			else:
-				linha1 = []
-				linha1.append('	seize("' + listaNodes[i].edges[0].destino.getNomeNode().lower()+'", 1) %>%\n')
-				linha1.append('	timeout(function() rexp(1, '+ str(listaNodes[i].edges[0].destino.getMediaServico()) +')) %>%\n')
-				linha1.append('	release("'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", 1) %>%\n')
-				linha1.append('	set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'"))\n')
-				self.codigo.writelines(linha1)
+				logging.info("len(listaNodes[i].edges)<2")
+			#	linha1 = []
+			#	linha1.append('	seize("' + listaNodes[i].edges[0].destino.getNomeNode().lower()+'", 1) %>%\n')
+			#	linha1.append('	timeout(function() rexp(1, '+ str(listaNodes[i].edges[0].destino.getMediaServico()) +')) %>%\n')
+			#	linha1.append('	release("'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", 1) %>%\n')
+			#	linha1.append('	set_attribute("queue_'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'", function() get_queue_count(env, "'+ listaNodes[i].edges[0].destino.getNomeNode().lower() +'"))\n')
+			#	self.codigo.writelines(linha1)
 
 		
 
