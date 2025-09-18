@@ -114,6 +114,7 @@ class GeradorR:
 		self.codigo.writelines(linha1) 
 
 		while (i < len(listaNodes)-1):
+			logging.info(i)
 			#print('tamanho lista = ', len(listaNodes)-1)
 			if len(listaNodes[i].edges) > 1:
 				prob = ''
