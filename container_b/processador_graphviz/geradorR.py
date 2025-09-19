@@ -213,7 +213,7 @@ class GeradorR:
 						
 			else:
 				logging.info("len(listaNodes[i].edges)<2")
-				i+=1
+				return
 			#	linha1 = []
 			#	linha1.append('	seize("' + listaNodes[i].edges[0].destino.getNomeNode().lower()+'", 1) %>%\n')
 			#	linha1.append('	timeout(function() rexp(1, '+ str(listaNodes[i].edges[0].destino.getMediaServico()) +')) %>%\n')
