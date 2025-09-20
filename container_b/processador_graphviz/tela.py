@@ -27,14 +27,14 @@ def processar():
     logging.info(f"lang recebido: {repr(request.form['lang'])}")
     # Aqui voc chama seu gerador com entrada_path como entrada e saida_path como saída
     # Exemplo fictício
-    if lang == 'Python':
-        py = geradorPython.GeradorPython(entrada_path)
-        py.principal()
-        codigo_gerado = py.nome()
-        os.rename(f"codigo/{codigo_gerado}", saida_path_py)
+    if lang == 'R':
+        r = geradorR.GeradorR(entrada_path)
+        r.principal()
+        codigo_gerado = r.nome()
+        os.rename(f"codigo/{codigo_gerado}", saida_path_r)
 
-        return send_file(saida_path_py, as_attachment=True, download_name="codigo.py")
-
+        return send_file(saida_path_r, as_attachment=True, download_name="codigo.r")
+        
     elif lang == 'Java':
         java = geradorJava.GeradorJava(entrada_path)
         java.principal()
@@ -45,12 +45,12 @@ def processar():
         return send_file(saida_path_java+'.zip', as_attachment=True, download_name="codigo.zip")
 
     else:
-        r = geradorR.GeradorR(entrada_path)
-        r.principal()
-        codigo_gerado = r.nome()
-        os.rename(f"codigo/{codigo_gerado}", saida_path_r)
+        py = geradorPython.GeradorPython(entrada_path)
+        py.principal()
+        codigo_gerado = py.nome()
+        os.rename(f"codigo/{codigo_gerado}", saida_path_py)
 
-        return send_file(saida_path_r, as_attachment=True, download_name="codigo.r")
+        return send_file(saida_path_py, as_attachment=True, download_name="codigo.py")
 
 
 app.run(host="0.0.0.0", port=8000)
