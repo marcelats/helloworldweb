@@ -70,6 +70,9 @@ public class Controle extends SimulationProcess
         }
         catch (SimulationException e)
         {
+            e.printStackTrace();
+            SimulationProcess.mainResume(); // libera a main
+            System.exit(1);
         }
         catch (RestartException e)
         {
