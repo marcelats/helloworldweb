@@ -67,24 +67,20 @@ public class Controle extends SimulationProcess
 %4encerra_processos
     
             try {
-                SimulationProcess.mainResume(); // tratar aqui
+                SimulationProcess.mainResume(); 
             } catch (SimulationException e) {
                 e.printStackTrace();
             }
         }
-        catch (SimulationException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             try {
-                SimulationProcess.mainResume(); // tratar aqui também
+                SimulationProcess.mainResume(); 
             } catch (SimulationException ex) {
                 ex.printStackTrace();
             }
             System.exit(1);
-        }
-        catch (RestartException e)
-        {
-            e.printStackTrace();
         }
     }
     public void await ()
