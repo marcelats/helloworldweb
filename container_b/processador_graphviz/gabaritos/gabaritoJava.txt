@@ -65,23 +65,36 @@ public class Controle extends SimulationProcess
 
             chegadas.terminate();
 %4encerra_processos
-
-            SimulationProcess.mainResume();
+    
+            try {
+                SimulationProcess.mainResume(); // tratar aqui
+            } catch (SimulationException e) {
+                e.printStackTrace();
+            }
         }
         catch (SimulationException e)
         {
             e.printStackTrace();
-            SimulationProcess.mainResume(); // libera a main
+            try {
+                SimulationProcess.mainResume(); // tratar aqui também
+            } catch (SimulationException ex) {
+                ex.printStackTrace();
+            }
             System.exit(1);
         }
         catch (RestartException e)
         {
+            e.printStackTrace();
         }
     }
     public void await ()
     {
-        this.resumeProcess();
-        SimulationProcess.mainSuspend();
+        try {
+            this.resumeProcess();
+            SimulationProcess.mainSuspend();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 @2classe_chegadas
