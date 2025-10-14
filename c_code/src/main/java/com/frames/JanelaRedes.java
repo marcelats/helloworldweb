@@ -159,6 +159,7 @@ public class JanelaRedes {
 			String sequenciaFonte = "";
 			String desvioPadrao = "";
 			String desvioPadraoFonte = "";
+			Boolean isPrimRec = false;
 			// Se você souber quantos valores esperar, pode armazenar em variáveis:
 			if (partes.length >= 5) {
 				tipo = Integer.parseInt(partes[0]);
@@ -173,6 +174,7 @@ public class JanelaRedes {
 				sequencia = partes[9];
 				desvioPadraoFonte = partes[10];
 				desvioPadrao = partes[11];
+				isPrimRec = Boolean.parseBoolean(partes[12]);
 			}
 			if(tipo==1||tipo==3){
 				Node node = new Node(0,0,null,tipo,nodeId,"");
@@ -230,6 +232,7 @@ public class JanelaRedes {
 				node.setDesvioPadrao(desvioPadrao);
 				node.setDesvioPadraoFonte(desvioPadraoFonte);
 				node.setNomeCentroServico("CS" + String.valueOf(count++));
+				node.setPrimRec(isPrimRec);
 			}
 
 		}
