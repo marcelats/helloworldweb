@@ -188,52 +188,52 @@ public class JanelaRedes {
 				switch(distServico)
 				{	case 0:
 						node.setDistribuicaoServico("normal");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh normal");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh normal, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 						break;
 					case 1:
 						node.setDistribuicaoServico("expntl");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh expntl");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh expntl, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 						break;
 					case 2:
 						node.setDistribuicaoServico("uniform");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh uniform");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh uniform, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 						break;
 					case 3:
 						node.setDistribuicaoServico("hyperx");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh hyperx");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh hyperx, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 						break;
 					case 4:
 						node.setDistribuicaoServico("erlang");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh erlang");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh erlang, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 						break;
 					default:
 						node.setDistribuicaoServico("expntl");
-						System.out.println("distServico " + distServico + " do no " + nodeId + " eh nenhuma das anteriores");
+						System.out.println("distServico " + distServico + " do no " + nodeId + " eh nenhuma das anteriores, node.getDistribuicaoServico: " + node.getDistribuicaoServico());
 				}
 				switch(distChegada)
 				{	case 0:
 						node.setDistribuicaoChegada("normal");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh normal");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh normal, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 1:
 						node.setDistribuicaoChegada("expntl");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh expntl");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh expntl, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 2:
 						node.setDistribuicaoChegada("uniform");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh uniform");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh uniform, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 3:
 						node.setDistribuicaoServico("hyperx");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh hyperx");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh hyperx, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 4:
 						node.setDistribuicaoServico("erlang");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh erlang");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh erlang, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					default:
 						node.setDistribuicaoChegada("expntl");
-						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh nenhuma das anteriores");
+						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh nenhuma das anteriores, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 				}
 				
 				node.setMediaFonte(mediaChegada);
