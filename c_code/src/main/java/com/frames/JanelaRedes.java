@@ -191,6 +191,12 @@ public class JanelaRedes {
 					case 2:
 						node.setDistribuicaoServico("uniform");
 						break;
+					case 3:
+						node.setDistribuicaoServico("hyperx");
+						break;
+					case 4:
+						node.setDistribuicaoServico("erlang");
+						break;
 					default:
 						node.setDistribuicaoServico("expntl");}
 				switch(distChegada)
@@ -202,6 +208,12 @@ public class JanelaRedes {
 						break;
 					case 2:
 						node.setDistribuicaoChegada("uniform");
+						break;
+					case 3:
+						node.setDistribuicaoServico("hyperx");
+						break;
+					case 4:
+						node.setDistribuicaoServico("erlang");
 						break;
 					default:
 						node.setDistribuicaoChegada("expntl");}
