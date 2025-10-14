@@ -162,9 +162,9 @@ public class JanelaRedes {
 			// Se você souber quantos valores esperar, pode armazenar em variáveis:
 			if (partes.length >= 5) {
 				tipo = Integer.parseInt(partes[0]);
-				distChegada = Integer.parseInt(partes[1]);
+				if(!("None".equals(partes[1]))) distChegada = Integer.parseInt(partes[1]);
 				distServico = Integer.parseInt(partes[2]);
-				mediaChegada = partes[3];
+				if(!("None".equals(partes[3]))) mediaChegada = partes[3];
 				mediaServico = partes[4];
 				numberOfServers = partes[5];
 				filaVazia = Boolean.parseBoolean(partes[6]);
