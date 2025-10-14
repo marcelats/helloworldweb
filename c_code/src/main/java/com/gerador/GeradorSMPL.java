@@ -892,8 +892,10 @@ public class GeradorSMPL extends Gerador {
 	
 	private String geraStringSchedule(int indice, boolean chegada)
 	{
+		System.out.println(indice);
 		String ret = "0.0";
 		Node temp = graph.getNode(indice);
+		System.out.println(temp.getDistribuicaoChegada());
 		if (chegada)
 		{
 			if (temp.isPrimRec())
