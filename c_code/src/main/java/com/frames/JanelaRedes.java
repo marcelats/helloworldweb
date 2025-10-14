@@ -188,39 +188,53 @@ public class JanelaRedes {
 				switch(distServico)
 				{	case 0:
 						node.setDistribuicaoServico("normal");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh normal");
 						break;
 					case 1:
 						node.setDistribuicaoServico("expntl");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh expntl");
 						break;
 					case 2:
 						node.setDistribuicaoServico("uniform");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh uniform");
 						break;
 					case 3:
 						node.setDistribuicaoServico("hyperx");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh hyperx");
 						break;
 					case 4:
 						node.setDistribuicaoServico("erlang");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh erlang");
 						break;
 					default:
-						node.setDistribuicaoServico("expntl");}
+						node.setDistribuicaoServico("expntl");
+						System.out.println("distServico " + distServico + " do no " nodeId + " eh nenhuma das anteriores");
+				}
 				switch(distChegada)
 				{	case 0:
 						node.setDistribuicaoChegada("normal");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh normal");
 						break;
 					case 1:
 						node.setDistribuicaoChegada("expntl");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh expntl");
 						break;
 					case 2:
 						node.setDistribuicaoChegada("uniform");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh uniform");
 						break;
 					case 3:
 						node.setDistribuicaoServico("hyperx");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh hyperx");
 						break;
 					case 4:
 						node.setDistribuicaoServico("erlang");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh erlang");
 						break;
 					default:
-						node.setDistribuicaoChegada("expntl");}
+						node.setDistribuicaoChegada("expntl");
+						System.out.println("distChegada " + distChegada + " do no " nodeId + " eh nenhuma das anteriores");
+				}
 				node.setMediaFonte(mediaChegada);
 				node.setMedia(mediaServico);
 				node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
