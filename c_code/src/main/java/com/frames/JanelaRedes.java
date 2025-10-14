@@ -235,6 +235,7 @@ public class JanelaRedes {
 						node.setDistribuicaoChegada("expntl");
 						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh nenhuma das anteriores");
 				}
+				
 				node.setMediaFonte(mediaChegada);
 				node.setMedia(mediaServico);
 				node.setImage(new ImageIcon("/home/marcela/Downloads/asdadesktop/imgIcones/R1x1.gif"));
@@ -249,6 +250,7 @@ public class JanelaRedes {
 				node.setDesvioPadraoFonte(desvioPadraoFonte);
 				node.setNomeCentroServico("CS" + String.valueOf(count++));
 				node.setPrimRec(isPrimRec);
+				System.out.println("distServico do no " + nodeId + " eh " + graph.getNode(nodeId).getDistribuicaoServico() + " e distChegada eh " + graph.getNode(nodeId).getDistribuicaoChegada());
 			}
 
 		}
