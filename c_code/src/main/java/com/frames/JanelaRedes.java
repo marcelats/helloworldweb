@@ -164,7 +164,9 @@ public class JanelaRedes {
 			if (partes.length >= 5) {
 				tipo = Integer.parseInt(partes[0]);
 				if(!("None".equals(partes[1]))) distChegada = Integer.parseInt(partes[1]);
+				System.out.println("distChegada do no " + nodeId + ": " + distChegada);
 				distServico = Integer.parseInt(partes[2]);
+				System.out.println("distServico do no " + nodeId + ": " + distServico);
 				if(!("None".equals(partes[3]))) mediaChegada = partes[3];
 				mediaServico = partes[4];
 				numberOfServers = partes[5];
