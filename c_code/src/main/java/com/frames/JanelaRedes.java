@@ -224,11 +224,11 @@ public class JanelaRedes {
 						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh uniform, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 3:
-						node.setDistribuicaoServico("hyperx");
+						node.setDistribuicaoChegada("hyperx");
 						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh hyperx, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					case 4:
-						node.setDistribuicaoServico("erlang");
+						node.setDistribuicaoChegada("erlang");
 						System.out.println("distChegada " + distChegada + " do no " + nodeId + " eh erlang, node.getDistribuicaoChegada: " + node.getDistribuicaoChegada());
 						break;
 					default:
