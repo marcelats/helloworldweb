@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package
 # Dockerfile
 
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y build-essential && apt-get clean
