@@ -28,13 +28,13 @@ services:
       - app-network
     depends_on:
       - postgres 
-      - container_b
-      - python-executor  
+      - rjp_code
+      - executor  
 
-  container_b:
+  rjp_code:
     build:
-      context: ./container_b  # pasta com o Dockerfile
-    container_name: container_b
+      context: ./rjp_code  # pasta com o Dockerfile
+    container_name: rjp_code
     volumes:
       - shared-data:/shared
     networks:
@@ -42,16 +42,16 @@ services:
     ports:
       - "8000:8000"
 
-  python-executor:
+  executor:
     build: ./executor
     ports:
       - "8001:8000"
     networks:
       - app-network  
       
-  java-app:
+  c_code:
     build: ./c_code
-    container_name: meu-java   
+    container_name: c_code   
     ports:
       - "8002:8002"
     networks:
