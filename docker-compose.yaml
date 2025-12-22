@@ -43,7 +43,7 @@ services:
       - "8000:8000"
 
   python-executor:
-    build: ./container-python
+    build: ./executor
     ports:
       - "8001:8000"
     networks:
