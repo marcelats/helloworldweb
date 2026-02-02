@@ -8,9 +8,9 @@ import logging
 import requests
 app = Flask(__name__)
 
-@app.route('/executar', methods=['POST'])
+@app.route('/execute', methods=['POST'])
 def executar():
-    code = request.files['arquivo']
+    code = request.files['file']
     lang = request.form['lang'].strip()
     logging.basicConfig(level=logging.INFO)
 
@@ -28,7 +28,7 @@ def executar():
 
         elif lang == 'Java':
 
-            zip_path = os.path.join(tmpdir, 'codigo.zip')
+            zip_path = os.path.join(tmpdir, 'code.zip')
             code.save(zip_path)
 
             with open(zip_path, "rb") as f:
