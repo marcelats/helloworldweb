@@ -30,7 +30,7 @@ def process():
         r = geradorR.GeradorR(input_path)
         r.principal()
         generated_code = r.nome()
-        os.rename(f"code/{generated_code}", output_path_r)
+        os.rename(f"codigo/{generated_code}", output_path_r)
 
         return send_file(output_path_r, as_attachment=True, download_name="code.r")
         
@@ -40,14 +40,14 @@ def process():
         generated_code = java.nome()
         file = os.path.join('code', generated_code)
         shutil.make_archive(output_path_java, 'zip', file)
-        os.rename(f"code/{generated_code}", output_path_java)
+        os.rename(f"codigo/{generated_code}", output_path_java)
         return send_file(output_path_java+'.zip', as_attachment=True, download_name="code.zip")
 
     else:
         py = geradorPython.GeradorPython(input_path)
         py.principal()
         generated_code = py.nome()
-        os.rename(f"code/{generated_code}", output_path_py)
+        os.rename(f"codigo/{generated_code}", output_path_py)
 
         return send_file(output_path_py, as_attachment=True, download_name="code.py")
 
