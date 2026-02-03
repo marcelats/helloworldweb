@@ -122,21 +122,16 @@ public class GeradorSMPL extends Gerador {
 	 * @param buffer Vari   vel que cont   m as informa      es a serem gravadas no arquivo.
 	 */
 	private void gravaArquivo(StringBuffer buffer) {
-				
-		
-		try {          
-            
-			FileWriter out = new FileWriter(new File(filename),true);
-			out.write(buffer.toString());
-			out.write('\n');
-			
-			out.close();
-			//System.out.println(buffer.toString());
-            //		System.out.println('\n');
-		} catch(IOException ex) {
-			ex.printStackTrace();
-		}
-	}//
+	    try (FileWriter out = new FileWriter(filename, true)) {
+	        out.write(buffer.toString());
+	        out.write(System.lineSeparator());
+	    } catch (IOException ex) {
+	        ex.printStackTrace();
+	    } finally {
+	        buffer.setLength(0);
+	    }
+	}
+
 
 	
 
