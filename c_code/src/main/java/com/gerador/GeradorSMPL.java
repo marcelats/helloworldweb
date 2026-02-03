@@ -131,8 +131,8 @@ public class GeradorSMPL extends Gerador {
 			out.write('\n');
 			
 			out.close();
-			System.out.println(buffer.toString());
-            		System.out.println('\n');
+			//System.out.println(buffer.toString());
+            //		System.out.println('\n');
 		} catch(IOException ex) {
 			ex.printStackTrace();
 		}
